@@ -103,24 +103,35 @@ __attribute__((weak)) bool led_update_kb(led_t led_state) {
 /** \brief Initialise any LED related hardware and/or state
  */
 __attribute__((weak)) void led_init_ports(void) {
+
+/** If the OPENDRAIN_INDICATORS option is not defined in config.h, the indicator
+    pins default to push-pull output. Else, they are defined as open-drain. The
+    pin mode configuration is done through the INDICATOR_PIN_MODE which is 
+    attributed right at the beggining. **/
+#ifndef OPENDRAIN_INDICATORS
+#define INDICATOR_PIN_MODE PAL_MODE_OUTPUT_PUSHPULL
+#else
+#define INDICATOR_PIN_MODE PAL_MODE_OUTPUT_OPENDRAIN
+ 
+#define INDICATOR_PIN_MODE 
 #ifdef LED_NUM_LOCK_PIN
-    setPinOutput(LED_NUM_LOCK_PIN);
+    palSetLineMode(LED_NUM_LOCK_PIN, INDICATOR_PIN_MODE);
     writePin(LED_NUM_LOCK_PIN, !LED_PIN_ON_STATE);
 #endif
 #ifdef LED_CAPS_LOCK_PIN
-    setPinOutput(LED_CAPS_LOCK_PIN);
+    palSetLineMode(LED_CAPS_LOCK_PIN, INDICATOR_PIN_MODE);
     writePin(LED_CAPS_LOCK_PIN, !LED_PIN_ON_STATE);
 #endif
 #ifdef LED_SCROLL_LOCK_PIN
-    setPinOutput(LED_SCROLL_LOCK_PIN);
+    palSetLineMode(LED_SCROLL_LOCK_PIN, INDICATOR_PIN_MODE);
     writePin(LED_SCROLL_LOCK_PIN, !LED_PIN_ON_STATE);
 #endif
 #ifdef LED_COMPOSE_PIN
-    setPinOutput(LED_COMPOSE_PIN);
+    palSetLineMode(LED_COMPOSE_PIN, INDICATOR_PIN_MODE);
     writePin(LED_COMPOSE_PIN, !LED_PIN_ON_STATE);
 #endif
 #ifdef LED_KANA_PIN
-    setPinOutput(LED_KANA_PIN);
+    palSetLineMode(LED_KANA_PIN, INDICATOR_PIN_MODE)
     writePin(LED_KANA_PIN, !LED_PIN_ON_STATE);
 #endif
 }
