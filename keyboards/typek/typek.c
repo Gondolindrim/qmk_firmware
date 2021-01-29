@@ -17,7 +17,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "typek.h"
 
-void keyboard_pre_init_user(void) {
+void led_init_ports(void) {
   // Call the keyboard pre init code.
 
 	palSetLineMode(B11, PAL_MODE_OUTPUT_OPENDRAIN);
