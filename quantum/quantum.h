@@ -216,6 +216,7 @@ typedef ioline_t pin_t;
 #    define setPinInputHigh(pin) palSetLineMode(pin, PAL_MODE_INPUT_PULLUP)
 #    define setPinInputLow(pin) palSetLineMode(pin, PAL_MODE_INPUT_PULLDOWN)
 #    define setPinOutput(pin) palSetLineMode(pin, PAL_MODE_OUTPUT_PUSHPULL)
+#    define setPinOpenDrain(pin) palSetLineMode(pin, PAL_MODE_OUTPUT_OPENDRAIN)
 
 #    define writePinHigh(pin) palSetLine(pin)
 #    define writePinLow(pin) palClearLine(pin)
