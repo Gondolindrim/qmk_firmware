@@ -16,7 +16,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "typek.h"
-#define LED_PIN_ON_STATE 1
+#define LED_PIN_ON_STATE 0
 void led_init_ports(void) {
 
 /** If the OPENDRAIN_INDICATORS option is not defined in config.h, the indicator
