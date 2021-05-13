@@ -16,6 +16,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include QMK_KEYBOARD_H
+#define MEDIA_KEY_DELAY 3
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    [0] = LAYOUT_all(
@@ -27,12 +28,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 	)
 };
 
-#ifdef ENCODER_ENABLE
 void encoder_update_user(uint8_t index, bool clockwise) {
+	uint16_t held_keycode_timer = timer_read();
+	uint16_t mapped_code        = 0;
 	if (clockwise) {
-	    tap_code(KC__VOLDOWN);
+		mapped_code = KC_VOLD;
 	} else {
-	    tap_code(KC__VOLUP);
+		mapped_code = KC_VOLU;
 	}
+	register_code(mapped_code);
+	while (timer_elapsed(held_keycode_timer) < MEDIA_KEY_DELAY)
+	    ; /* no-op */
+	unregister_code(mapped_code);
 }
-#endif
