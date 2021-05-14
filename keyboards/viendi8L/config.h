@@ -61,6 +61,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define ENCODERS_PAD_B { B8 }
 #define ENCODER_RESOLUTION 1
 
+#define RED_INDICATOR_PIN C14
+#define GREEN_INDICATOR_PIN C13
+#define BLUE_INDICATOR_PIN C15
+
 /*
  * Feature disable options
  *  These options are also useful to firmware size reduction.
