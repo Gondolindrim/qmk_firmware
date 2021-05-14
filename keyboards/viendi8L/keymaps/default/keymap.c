@@ -67,6 +67,14 @@ int encoder_click_delay <delay>
 Where <delay> is the amount of time in miliseconds you want the user to hold (must be greater than zero) so the mode change is triggered. A time greater than 250 is recommended.
 
 In each mode you can also configure what tapping the encoder click does through the MODE(n)_CLICK variable, also a keycode. By default, mode zero click is media play/pause, mode one click is print screen and mode two click is mouse button 1.
+
+---------------------------------------
+    THE THREE LED INDICATORS
+---------------------------------------
+Additionally, Viendi8L also includes three single-color THT diode indicators that should be soldered  by the user. Their pin locations are defined in the TOP_INDICATOR_PIN, MID_INDICATOR_PIN and BOT_INDICATOR_PIN in ./keyboards/viendi8L/config.h .
+
+By default, from top to bottom, those indicators are the caps lock indicator, num lock indicator, and the layer two indicator which is accessed through the TG(2) keycode. In the default layout, that is hit using Fn (MO(1)) and CTRL.
+
 */
 
 #define ENCODER_LOW_DELAY 10
@@ -102,12 +110,22 @@ uint16_t encoder_click_modes[3] = {MODE0_CLICK, MODE1_CLICK, MODE2_CLICK };
 int encoder_mode_count = 0;
 
 void board_init(void){
+	// Set the RGB indicator pins as open drain and set the startup color
 	palSetLineMode(RED_INDICATOR_PIN, PAL_MODE_OUTPUT_OPENDRAIN);	
 	writePin(RED_INDICATOR_PIN, STARTUP_COLOR[0]);
 	palSetLineMode(GREEN_INDICATOR_PIN, PAL_MODE_OUTPUT_OPENDRAIN);	
 	writePin(GREEN_INDICATOR_PIN, STARTUP_COLOR[1]);
 	palSetLineMode(BLUE_INDICATOR_PIN, PAL_MODE_OUTPUT_OPENDRAIN);	
 	writePin(BLUE_INDICATOR_PIN, STARTUP_COLOR[2]);
+
+	// Set the three LED indicator pins as open drain and set them off	
+	palSetLineMode(TOP_INDICATOR_PIN, PAL_MODE_OUTPUT_OPENDRAIN);	
+	palSetLineMode(MID_INDICATOR_PIN, PAL_MODE_OUTPUT_OPENDRAIN);	
+	palSetLineMode(BOT_INDICATOR_PIN, PAL_MODE_OUTPUT_OPENDRAIN);
+
+	writePin(TOP_INDICATOR_PIN, 1);
+	writePin(MID_INDICATOR_PIN, 1);
+	writePin(BOT_INDICATOR_PIN, 1);
 };
 
 void keyboard_post_init_user(void){

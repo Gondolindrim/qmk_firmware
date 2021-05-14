@@ -65,6 +65,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define GREEN_INDICATOR_PIN C13
 #define BLUE_INDICATOR_PIN C15
 
+#define TOP_INDICATOR_PIN F1
+#define MID_INDICATOR_PIN F0
+#define BOT_INDICATOR_PIN A0
+
 /*
  * Feature disable options
  *  These options are also useful to firmware size reduction.
