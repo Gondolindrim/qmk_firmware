@@ -80,6 +80,7 @@ By default, from top to bottom, those indicators are the caps lock indicator, nu
 
 #define ENCODER_LOW_DELAY 10
 #define ENCODER_HIGH_DELAY 500
+#define BEHAVIOR_CHANGE_DELAY 3000
 
 // Defining encoder click keycode
 enum keyboard_keycodes {
@@ -89,7 +90,7 @@ enum keyboard_keycodes {
 	ALT_TAB_CLICK
 };
 
-int encoder_click_delay = 10;
+uint16_t encoder_click_delay = ENCODER_LOW_DELAY;
 
 
 typedef int color[RGB_PIN_COUNT];
@@ -99,6 +100,7 @@ typedef int color[RGB_PIN_COUNT];
 #define BLUE COLOR(1,1,0)
 #define YELLOW COLOR(0,0,1)
 #define PINK COLOR(0,1,0)
+#define WHITE COLOR(0,0,0)
 
 #define STARTUP_COLOR YELLOW
 
@@ -110,9 +112,9 @@ typedef struct _encoder_mode_t {
 } encoder_mode_t;
 
 const encoder_mode_t encoder_modes[] = {
-	{ .indicator_color = RED, .clockwise_key = KC_VOLD, .counterclockwise_key = KC_VOLU, .clicked_key = KC_MPLY },
-	{ .indicator_color = GREEN, .clockwise_key = KC_BRID, .counterclockwise_key = KC_BRIU, .clicked_key = KC_PSCR },
-	{ .indicator_color = BLUE, .clockwise_key = KC_WH_D, .counterclockwise_key = KC_WH_U, .clicked_key = KC_BTN1 },
+	{ .indicator_color = RED, .clockwise_key = KC_VOLD, .counterclockwise_key = KC_VOLU, .clicked_key = KC_MUTE },
+	{ .indicator_color = GREEN, .clockwise_key = KC_MPRV, .counterclockwise_key = KC_MNXT, .clicked_key = KC_MPLY },
+	{ .indicator_color = BLUE, .clockwise_key = KC_WH_U, .counterclockwise_key = KC_WH_D, .clicked_key = KC_BTN1 },
 	{ .indicator_color = PINK, .clockwise_key = ALT_TAB_SWITCH, .counterclockwise_key = ALT_TAB_SWITCH, .clicked_key = ALT_TAB_CLICK}, 
 };
 
@@ -153,7 +155,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
               KC_P0  , KC_P0  , KC_PDOT, KC_PDOT, KC_LCTL,          KC_LGUI, KC_LALT,                   MO(1),            KC_RCTL, KC_P0  , KC_LEFT, KC_DOWN, KC_RGHT, KC_SLSH
 	),
    [1] = LAYOUT_all(
-              KC_NLCK, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, 
+              ENCDBCH, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, 
               KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
               KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
               KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, 
@@ -194,9 +196,22 @@ void encoder_update_user(uint8_t index, bool clockwise) {
 	}
 }
 
-uint32_t held_click_timer;
+uint32_t held_click_timer;	
+	
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 	switch (keycode) {
+		case ENCDBCH:
+			if (record->event.pressed){
+				held_click_timer = timer_read32();
+				set_indicator_colors(WHITE);
+			} else {
+				if (timer_elapsed32(held_click_timer) > BEHAVIOR_CHANGE_DELAY){
+					set_indicator_colors( encoder_modes[encoder_mode_count].indicator_color ); // Get indicator color back to the mode it was before
+					if (encoder_click_delay == ENCODER_LOW_DELAY) encoder_click_delay = ENCODER_HIGH_DELAY;
+					else encoder_click_delay = ENCODER_LOW_DELAY;
+				}
+			}
+			return false;			
 		case ENCODER_CLICK:
 			if (record->event.pressed) { // What to do when the encoder is pressed
 				held_click_timer = timer_read32();
@@ -221,6 +236,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 				};
 			};
 			return false; // Skip all further processing of this key
+		case KC_LALT: // If this is not defined, if the encoder is activated in the alt-tab mode while the LALT key is pressed, the menu goes away.
+			if (record->event.pressed){
+				is_alt_tab_active = true;
+			}
+			return true;
 		default:
 			return true; // Process all other keycodes normally
 	};
