@@ -109,13 +109,14 @@ typedef struct _encoder_mode_t {
 	uint16_t clicked_key ;
 } encoder_mode_t;
 
-#define NUM_ENCODER_MODES 4
-const encoder_mode_t encoder_modes[NUM_ENCODER_MODES] = {
+const encoder_mode_t encoder_modes[] = {
 	{ .indicator_color = RED, .clockwise_key = KC_VOLD, .counterclockwise_key = KC_VOLU, .clicked_key = KC_MPLY },
 	{ .indicator_color = GREEN, .clockwise_key = KC_BRID, .counterclockwise_key = KC_BRIU, .clicked_key = KC_PSCR },
 	{ .indicator_color = BLUE, .clockwise_key = KC_WH_D, .counterclockwise_key = KC_WH_U, .clicked_key = KC_BTN1 },
 	{ .indicator_color = PINK, .clockwise_key = ALT_TAB_SWITCH, .counterclockwise_key = ALT_TAB_SWITCH, .clicked_key = ALT_TAB_CLICK}, 
 };
+
+#define NUM_ENCODER_MODES (sizeof(encoder_modes)/sizeof(encoder_modes[0]))
 
 int pin_count;
 void set_indicator_colors(const color target_color){
@@ -162,9 +163,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 
 bool is_alt_tab_active = false; // Flag to check if alt tab is active
-uint16_t alt_tab_timer = 0;     // Time trigger for alt tab
+uint32_t alt_tab_timer = 0;     // Time trigger for alt tab
 uint16_t mapped_code = 0;
-uint16_t held_keycode_timer = 0;
+uint32_t held_keycode_timer = 0;
 
 void encoder_update_user(uint8_t index, bool clockwise) {
 	if (clockwise){
@@ -185,7 +186,7 @@ void encoder_update_user(uint8_t index, bool clockwise) {
 		{
 			register_code(mapped_code);
 			held_keycode_timer = timer_read32();
-			while (timer_elapsed(held_keycode_timer) < MEDIA_KEY_DELAY)
+			while (timer_elapsed32(held_keycode_timer) < MEDIA_KEY_DELAY)
 			; /* no-op */
 			unregister_code(mapped_code);
 			break;
@@ -193,14 +194,14 @@ void encoder_update_user(uint8_t index, bool clockwise) {
 	}
 }
 
-uint16_t held_click_timer;
+uint32_t held_click_timer;
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 	switch (keycode) {
 		case ENCODER_CLICK:
 			if (record->event.pressed) { // What to do when the encoder is pressed
-				held_click_timer = timer_read();
+				held_click_timer = timer_read32();
 			} else { // What to do when encoder is released
-				if (timer_elapsed(held_click_timer) < encoder_click_delay ){ // Checking if the time the encoder click was held was smaller than the delay defined. If it was, just register whatever it is the click does
+				if (timer_elapsed32(held_click_timer) < encoder_click_delay ){ // Checking if the time the encoder click was held was smaller than the delay defined. If it was, just register whatever it is the click does
 					switch ( encoder_modes[ encoder_mode_count ].clicked_key ){
 						case ALT_TAB_CLICK:
 							unregister_code(KC_LALT);
@@ -208,8 +209,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 							break;
 						default:
 							register_code( encoder_modes[ encoder_mode_count ].clicked_key );
-							uint16_t held_keycode_timer = timer_read();
-							while (timer_elapsed(held_keycode_timer) < MEDIA_KEY_DELAY);
+							uint32_t held_keycode_timer = timer_read32();
+							while (timer_elapsed32(held_keycode_timer) < MEDIA_KEY_DELAY);
 							unregister_code( encoder_modes[ encoder_mode_count ].clicked_key );
 							break;
 					}
@@ -249,7 +250,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
 void housekeeping_task_user(void) { // The very important timer.
 	if (is_alt_tab_active) {
-		if (timer_elapsed(alt_tab_timer) > ALT_TAB_DELAY) {
+		if (timer_elapsed32(alt_tab_timer) > ALT_TAB_DELAY) {
 			unregister_code(KC_LALT);
 			is_alt_tab_active = false;
 		}
