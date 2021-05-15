@@ -14,10 +14,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
+#include<print.h>
 #include QMK_KEYBOARD_H
-#define MEDIA_KEY_DELAY 3
-
+#define MEDIA_KEY_DELAY 10
+#define ALT_TAB_DELAY 1000
+pin_t rgb_indicators_pins[ RGB_PIN_COUNT ] = {RED_INDICATOR_PIN, GREEN_INDICATOR_PIN, BLUE_INDICATOR_PIN};
 /*
 ---------------------------------------
        VIENDI 8L KEYMAP FILE
@@ -80,88 +81,117 @@ By default, from top to bottom, those indicators are the caps lock indicator, nu
 #define ENCODER_LOW_DELAY 10
 #define ENCODER_HIGH_DELAY 500
 
+// Defining encoder click keycode
+enum keyboard_keycodes {
+        ENCODER_CLICK = SAFE_RANGE,
+	ENCDBCH, // Stands for ENCODER DELAY BEHAVIOR CHANGE
+	ALT_TAB_SWITCH,
+	ALT_TAB_CLICK
+};
+
 int encoder_click_delay = 10;
 
-// Set colored indicator colors
 
-// Defining 3-bit colors for the indicator LED
+typedef int color[RGB_PIN_COUNT];
+#define COLOR(r,g,b) ((color){r,g,b})
+#define RED COLOR(0,1,1)
+#define GREEN COLOR(1,0,1)
+#define BLUE COLOR(1,1,0)
+#define YELLOW COLOR(0,0,1)
+#define PINK COLOR(0,1,0)
 
-int STARTUP_COLOR[3] = {0,0,1};
-int MODE0_COLOR[3] = {0,1,1};
-int MODE1_COLOR[3] = {1,0,1};
-int MODE2_COLOR[3] = {1,1,0};
+#define STARTUP_COLOR YELLOW
 
-#define MODE0_CLOCKWISE KC_VOLD
-#define MODE0_COUNTERCLOCKWISE KC_VOLU
-#define MODE0_CLICK KC_MPLY
+typedef struct _encoder_mode_t {
+	color indicator_color;
+	uint16_t clockwise_key;
+	uint16_t counterclockwise_key;
+	uint16_t clicked_key ;
+} encoder_mode_t;
 
-#define MODE1_CLOCKWISE KC_BRID
-#define MODE1_COUNTERCLOCKWISE KC_BRIU
-#define MODE1_CLICK KC_PSCREEN
+#define NUM_ENCODER_MODES 4
+const encoder_mode_t encoder_modes[NUM_ENCODER_MODES] = {
+	{ .indicator_color = RED, .clockwise_key = KC_VOLD, .counterclockwise_key = KC_VOLU, .clicked_key = KC_MPLY },
+	{ .indicator_color = GREEN, .clockwise_key = KC_BRID, .counterclockwise_key = KC_BRIU, .clicked_key = KC_PSCR },
+	{ .indicator_color = BLUE, .clockwise_key = KC_WH_D, .counterclockwise_key = KC_WH_U, .clicked_key = KC_BTN1 },
+	{ .indicator_color = PINK, .clockwise_key = ALT_TAB_SWITCH, .counterclockwise_key = ALT_TAB_SWITCH, .clicked_key = ALT_TAB_CLICK}, 
+};
 
-#define MODE2_CLOCKWISE KC_WH_U
-#define MODE2_COUNTERCLOCKWISE KC_WH_D
-#define MODE2_CLICK KC_BTN1
-
-uint16_t encoder_clockwise_modes[3] = {MODE0_CLOCKWISE, MODE1_CLOCKWISE, MODE2_CLOCKWISE };
-uint16_t encoder_counterclockwise_modes[3] = {MODE0_COUNTERCLOCKWISE, MODE1_COUNTERCLOCKWISE, MODE2_COUNTERCLOCKWISE };
-uint16_t encoder_click_modes[3] = {MODE0_CLICK, MODE1_CLICK, MODE2_CLICK };
+int pin_count;
+void set_indicator_colors(const color target_color){
+	for (pin_count = 0 ; pin_count < RGB_PIN_COUNT ; pin_count++) writePin(rgb_indicators_pins[pin_count], target_color[pin_count]) ;
+}
 
 int encoder_mode_count = 0;
-
 void board_init(void){
 	// Set the RGB indicator pins as open drain and set the startup color
-	palSetLineMode(RED_INDICATOR_PIN, PAL_MODE_OUTPUT_OPENDRAIN);	
-	writePin(RED_INDICATOR_PIN, STARTUP_COLOR[0]);
-	palSetLineMode(GREEN_INDICATOR_PIN, PAL_MODE_OUTPUT_OPENDRAIN);	
-	writePin(GREEN_INDICATOR_PIN, STARTUP_COLOR[1]);
-	palSetLineMode(BLUE_INDICATOR_PIN, PAL_MODE_OUTPUT_OPENDRAIN);	
-	writePin(BLUE_INDICATOR_PIN, STARTUP_COLOR[2]);
+	for (pin_count = 0 ; pin_count < RGB_PIN_COUNT ; pin_count++){
+		palSetLineMode(rgb_indicators_pins[pin_count], PAL_MODE_OUTPUT_OPENDRAIN);
+	}
+	set_indicator_colors(STARTUP_COLOR);
 
 	// Set the three LED indicator pins as open drain and set them off	
 	palSetLineMode(TOP_INDICATOR_PIN, PAL_MODE_OUTPUT_OPENDRAIN);	
 	palSetLineMode(MID_INDICATOR_PIN, PAL_MODE_OUTPUT_OPENDRAIN);	
 	palSetLineMode(BOT_INDICATOR_PIN, PAL_MODE_OUTPUT_OPENDRAIN);
-
 	writePin(TOP_INDICATOR_PIN, 1);
 	writePin(MID_INDICATOR_PIN, 1);
 	writePin(BOT_INDICATOR_PIN, 1);
 };
 
 void keyboard_post_init_user(void){
-	writePin(RED_INDICATOR_PIN, MODE0_COLOR[0]);
-	writePin(GREEN_INDICATOR_PIN, MODE0_COLOR[1]);
-	writePin(BLUE_INDICATOR_PIN, MODE0_COLOR[2]);
-};
-
-// Defining encoder click keycode
-enum keyboard_keycodes {
-        ENCODER_CLICK = SAFE_RANGE,
-	ENCDBCH // Stands for ENCODER DELAY BEHAVIOR CHANGE
+	for (pin_count = 0 ; pin_count < RGB_PIN_COUNT ; pin_count++) writePin(rgb_indicators_pins[pin_count], encoder_modes[0].indicator_color[pin_count]);
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    [0] = LAYOUT_all(
-        ENCODER_CLICK, KC_PSLS, KC_PAST, KC_DEL , KC_ESC , KC_1   , KC_2   , KC_3   , KC_4   , KC_5   , KC_6   , KC_7   , KC_8   , KC_9   , KC_0   , KC_MINS, KC_EQL , KC_BSPC,
+        ENCODER_CLICK, KC_NLCK, KC_PAST, KC_DEL , KC_ESC , KC_1   , KC_2   , KC_3   , KC_4   , KC_5   , KC_6   , KC_7   , KC_8   , KC_9   , KC_0   , KC_MINS, KC_EQL , KC_BSPC,
               KC_P7  , KC_P8  , KC_P9  , KC_PPLS, KC_TAB , KC_Q   , KC_W   , KC_E   , KC_R   , KC_T   , KC_Y   , KC_U   , KC_I   , KC_O   , KC_P   , KC_LBRC, KC_RBRC, KC_BSLS,
               KC_P4  , KC_P5  , KC_P6  , KC_P6  , KC_CAPS, KC_A   , KC_S   , KC_D   , KC_F   , KC_G   , KC_H   , KC_J   , KC_K   , KC_L   , KC_SCLN, KC_QUOT, KC_ENT , KC_BSPC,
 	      KC_P1  , KC_P2  , KC_P3  , KC_PENT, KC_LSFT, KC_BSLS, KC_Z   , KC_X   , KC_C   , KC_V   , KC_B   , KC_N   , KC_M   , KC_COMM, KC_DOT , KC_SLSH, KC_RSFT, KC_NUHS,
-              KC_P0  , KC_P0  , KC_PDOT, KC_PDOT, KC_LCTL,          KC_LGUI, KC_LALT,                   RGB_TOG,          KC_RCTL, KC_P0  , KC_LEFT, KC_DOWN, KC_RGHT, KC_SLSH
-	)
+              KC_P0  , KC_P0  , KC_PDOT, KC_PDOT, KC_LCTL,          KC_LGUI, KC_LALT,                   MO(1),            KC_RCTL, KC_P0  , KC_LEFT, KC_DOWN, KC_RGHT, KC_SLSH
+	),
+   [1] = LAYOUT_all(
+              KC_NLCK, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, 
+              KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+              KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+              KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, 
+              KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,          KC_TRNS, KC_TRNS,                   KC_TRNS,          KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS
+        )
 };
 
+
+bool is_alt_tab_active = false; // Flag to check if alt tab is active
+uint16_t alt_tab_timer = 0;     // Time trigger for alt tab
+uint16_t mapped_code = 0;
+uint16_t held_keycode_timer = 0;
+
 void encoder_update_user(uint8_t index, bool clockwise) {
-	uint16_t held_keycode_timer = timer_read();
-	uint16_t mapped_code        = 0;
-	if (clockwise) {
-		mapped_code = encoder_clockwise_modes[ encoder_mode_count ];
+	if (clockwise){
+		mapped_code = encoder_modes[ encoder_mode_count ].clockwise_key;
 	} else {
-		mapped_code = encoder_counterclockwise_modes [ encoder_mode_count ];
+		mapped_code = encoder_modes[ encoder_mode_count ].counterclockwise_key;
 	}
-	register_code(mapped_code);
-	while (timer_elapsed(held_keycode_timer) < MEDIA_KEY_DELAY);
-	unregister_code(mapped_code);
-};
+	switch (mapped_code) {
+		case ALT_TAB_SWITCH:
+			if(!is_alt_tab_active) {
+				is_alt_tab_active = true;
+				register_code(KC_LALT);
+			}
+			alt_tab_timer = timer_read32();
+			tap_code16(!clockwise ? KC_TAB : S(KC_TAB));
+			break;
+		default:
+		{
+			register_code(mapped_code);
+			held_keycode_timer = timer_read32();
+			while (timer_elapsed(held_keycode_timer) < MEDIA_KEY_DELAY)
+			; /* no-op */
+			unregister_code(mapped_code);
+			break;
+		}
+	}
+}
 
 uint16_t held_click_timer;
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -171,39 +201,57 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 				held_click_timer = timer_read();
 			} else { // What to do when encoder is released
 				if (timer_elapsed(held_click_timer) < encoder_click_delay ){ // Checking if the time the encoder click was held was smaller than the delay defined. If it was, just register whatever it is the click does
-					register_code( encoder_click_modes[ encoder_mode_count ] );
-					uint16_t held_keycode_timer = timer_read();
-					while (timer_elapsed(held_keycode_timer) < MEDIA_KEY_DELAY);
-					unregister_code( encoder_click_modes[ encoder_mode_count ] );
-				} else { // If the encoder click was held for more time than the delay:
-					encoder_mode_count++ ; // Shifts encoder mode
-					encoder_mode_count = encoder_mode_count%3 ; // This makes sure encoder_mode_count keeps cycling between 0,1,2 and doesnt eventually overflow
-					switch (encoder_mode_count){
-						case 0:
-							writePin(RED_INDICATOR_PIN, MODE0_COLOR[0]);
-							writePin(GREEN_INDICATOR_PIN, MODE0_COLOR[1]);
-							writePin(BLUE_INDICATOR_PIN, MODE0_COLOR[2]);
-							break;
-						case 1:
-							writePin(RED_INDICATOR_PIN, MODE1_COLOR[0]);
-							writePin(GREEN_INDICATOR_PIN, MODE1_COLOR[1]);
-							writePin(BLUE_INDICATOR_PIN, MODE1_COLOR[2]);
-							break;
-						case 2:
-							writePin(RED_INDICATOR_PIN, MODE2_COLOR[0]);
-							writePin(GREEN_INDICATOR_PIN, MODE2_COLOR[1]);
-							writePin(BLUE_INDICATOR_PIN, MODE2_COLOR[2]);
+					switch ( encoder_modes[ encoder_mode_count ].clicked_key ){
+						case ALT_TAB_CLICK:
+							unregister_code(KC_LALT);
+							is_alt_tab_active = false;
 							break;
 						default:
-							writePin(RED_INDICATOR_PIN, 0);
-							writePin(GREEN_INDICATOR_PIN, 0);
-							writePin(BLUE_INDICATOR_PIN, 0);
+							register_code( encoder_modes[ encoder_mode_count ].clicked_key );
+							uint16_t held_keycode_timer = timer_read();
+							while (timer_elapsed(held_keycode_timer) < MEDIA_KEY_DELAY);
+							unregister_code( encoder_modes[ encoder_mode_count ].clicked_key );
 							break;
-					};
+					}
+				} else { // If the encoder click was held for more time than the delay:
+					encoder_mode_count++ ; // Shifts encoder mode
+					encoder_mode_count = encoder_mode_count%NUM_ENCODER_MODES ; // This makes sure encoder_mode_count keeps cycling between 0,1,...,NUM_ENCODER_MODES and doesnt eventually overflow
+					set_indicator_colors( encoder_modes[ encoder_mode_count ].indicator_color ); // Set indicator color to the corresponding defined color
 				};
 			};
 			return false; // Skip all further processing of this key
 		default:
 			return true; // Process all other keycodes normally
-		};
 	};
+};
+
+// Setting up caps lock and num lock indicators
+bool led_update_kb(led_t led_state) {
+	bool res = led_update_user(led_state);
+	if(res) {
+		writePin(TOP_INDICATOR_PIN, !led_state.caps_lock);
+		writePin(MID_INDICATOR_PIN, !led_state.num_lock);
+    	};
+	return res;
+}
+
+layer_state_t layer_state_set_user(layer_state_t state) {
+	switch (get_highest_layer(state)) {
+		case 1:
+			writePin(BOT_INDICATOR_PIN, 0);
+			break;
+		default: //  for any other layers, or the default layer
+			writePin(BOT_INDICATOR_PIN, 1);
+			break;
+	}
+	return state;
+}
+
+void housekeeping_task_user(void) { // The very important timer.
+	if (is_alt_tab_active) {
+		if (timer_elapsed(alt_tab_timer) > ALT_TAB_DELAY) {
+			unregister_code(KC_LALT);
+			is_alt_tab_active = false;
+		}
+	}
+}

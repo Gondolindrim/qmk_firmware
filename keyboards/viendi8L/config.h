@@ -59,15 +59,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define ENCODERS_PAD_A { B7 }
 #define ENCODERS_PAD_B { B8 }
-#define ENCODER_RESOLUTION 1
+#define ENCODER_RESOLUTION 2
 
 #define RED_INDICATOR_PIN C14
 #define GREEN_INDICATOR_PIN C13
 #define BLUE_INDICATOR_PIN C15
+#define RGB_PIN_COUNT 3
 
-#define TOP_INDICATOR_PIN F1
-#define MID_INDICATOR_PIN F0
-#define BOT_INDICATOR_PIN A0
+#define TOP_INDICATOR_PIN A0
+#define MID_INDICATOR_PIN F1
+#define BOT_INDICATOR_PIN F0
 
 /*
  * Feature disable options
