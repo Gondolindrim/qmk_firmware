@@ -196,27 +196,49 @@ void encoder_update_user(uint8_t index, bool clockwise) {
 	}
 }
 
-uint32_t held_click_timer;	
-	
+uint32_t held_click_timer = false;
+bool is_click_held;
+uint32_t encdbch_hold_timer;
+bool is_encdbch_held;
+void change_encoder_delay_behavior(void){
+	if (encoder_click_delay == ENCODER_LOW_DELAY){
+		encoder_click_delay = ENCODER_HIGH_DELAY;
+	} else {
+		encoder_click_delay = ENCODER_LOW_DELAY;
+	}
+}
+void cycle_encoder_mode(void){
+	encoder_mode_count++ ; // Shifts encoder mode
+	encoder_mode_count = encoder_mode_count%NUM_ENCODER_MODES ; // This makes sure encoder_mode_count keeps cycling between 0,1,...,NUM_ENCODER_MODES and doesnt eventually overflow
+	set_indicator_colors( encoder_modes[ encoder_mode_count ].indicator_color ); // Set indicator color to the corresponding defined color
+}
+
+bool automatic_encoder_mode_cycle = false; // This flag registers if the encoder mode was automatically cycled 
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 	switch (keycode) {
 		case ENCDBCH:
+			/* This keycode controls the change of delay behavior of the encoder, that is, it allows the user to swap the delay behaviors (no-delay and delayed behavior) on-the-fly.
+			   The way this works is, at the beggining of the code a macro BEHAVIOR_CHANGE_DELAY was defined. The idea is that if the ENCDBCH click is held for more than that macro, the behavior is swapped.
+			   When the keycode is pressed, a timer encdbch is started; in the housekeeping_user function, which runs every end of matrix processing, the timer is sampled again and if the total held time was larger than BEHAVIOR_CHANGE_DELAY, the encoder behavior mode is swapped.
+			*/
 			if (record->event.pressed){
-				held_click_timer = timer_read32();
+				encdbch_hold_timer = timer_read32();
 				set_indicator_colors(WHITE);
+				is_encdbch_held = true;	
 			} else {
-				if (timer_elapsed32(held_click_timer) > BEHAVIOR_CHANGE_DELAY){
-					set_indicator_colors( encoder_modes[encoder_mode_count].indicator_color ); // Get indicator color back to the mode it was before
-					if (encoder_click_delay == ENCODER_LOW_DELAY) encoder_click_delay = ENCODER_HIGH_DELAY;
-					else encoder_click_delay = ENCODER_LOW_DELAY;
-				}
+				is_encdbch_held = false;
+				set_indicator_colors( encoder_modes[encoder_mode_count].indicator_color ); // Place indicator color back to the mode it was before
+				if ( timer_elapsed32(encdbch_hold_timer) > BEHAVIOR_CHANGE_DELAY) change_encoder_delay_behavior();
 			}
 			return false;			
 		case ENCODER_CLICK:
 			if (record->event.pressed) { // What to do when the encoder is pressed
+				is_click_held = true;
 				held_click_timer = timer_read32();
 			} else { // What to do when encoder is released
-				if (timer_elapsed32(held_click_timer) < encoder_click_delay ){ // Checking if the time the encoder click was held was smaller than the delay defined. If it was, just register whatever it is the click does
+				is_click_held = false;
+				if (timer_elapsed32(held_click_timer) < encoder_click_delay && !automatic_encoder_mode_cycle ){ // Checking if the time the encoder click was held was smaller than the delay defined and if an automatic mode change was not already performed. If it was, just register whatever it is the click does.
 					switch ( encoder_modes[ encoder_mode_count ].clicked_key ){
 						case ALT_TAB_CLICK:
 							unregister_code(KC_LALT);
@@ -230,10 +252,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 							break;
 					}
 				} else { // If the encoder click was held for more time than the delay:
-					encoder_mode_count++ ; // Shifts encoder mode
-					encoder_mode_count = encoder_mode_count%NUM_ENCODER_MODES ; // This makes sure encoder_mode_count keeps cycling between 0,1,...,NUM_ENCODER_MODES and doesnt eventually overflow
-					set_indicator_colors( encoder_modes[ encoder_mode_count ].indicator_color ); // Set indicator color to the corresponding defined color
+					if (!automatic_encoder_mode_cycle) cycle_encoder_mode();
 				};
+				automatic_encoder_mode_cycle = false;
 			};
 			return false; // Skip all further processing of this key
 		case KC_LALT: // If this is not defined, if the encoder is activated in the alt-tab mode while the LALT key is pressed, the menu goes away.
@@ -274,5 +295,11 @@ void housekeeping_task_user(void) { // The very important timer.
 			unregister_code(KC_LALT);
 			is_alt_tab_active = false;
 		}
+	}
+	if (is_encdbch_held && timer_elapsed32(encdbch_hold_timer) > BEHAVIOR_CHANGE_DELAY) set_indicator_colors(encoder_modes[encoder_mode_count].indicator_color) ;
+	if (is_click_held && timer_elapsed32(held_click_timer) > ENCODER_HIGH_DELAY ){
+		automatic_encoder_mode_cycle = true;
+		held_click_timer = timer_read32();
+		cycle_encoder_mode();
 	}
 }
