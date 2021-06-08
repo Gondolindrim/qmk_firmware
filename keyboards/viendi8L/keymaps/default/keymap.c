@@ -78,14 +78,11 @@ By default, from top to bottom, those indicators are the caps lock indicator, nu
 
 */
 
-#define ENCODER_LOW_DELAY 10
-#define ENCODER_HIGH_DELAY 500
-#define BEHAVIOR_CHANGE_DELAY 3000
+#define ENCODER_MODE_CHANGE_DELAY 500
 
 // Defining encoder click keycode
 enum keyboard_keycodes {
         ENCODER_CLICK = SAFE_RANGE,
-	ENCDBCH,// Stands for ENCODER DELAY BEHAVIOR CHANGE
 	ALTTABS,// For alt-tab-switch
 	ALTTABC,// For alt-tab-click
 	ENCMUP, // Encoder mode up
@@ -94,8 +91,7 @@ enum keyboard_keycodes {
 	FND     // Toggle layer 2 on tap, turn layer 1 on hold
 };
 
-uint16_t encoder_click_delay = ENCODER_HIGH_DELAY;
-
+uint16_t encoder_click_delay = ENCODER_MODE_CHANGE_DELAY;
 
 typedef int color[RGB_PIN_COUNT];
 #define COLOR(r,g,b) ((color){r,g,b})
@@ -247,8 +243,7 @@ void fnd_finished(qk_tap_dance_state_t *state, void *user_data) {
                 layer_on(2);
             }
             break;
-	case TD_NONE: break;
-	case TD_UNKNOWN: break;
+	default: break;
     }
 }
 
@@ -273,7 +268,6 @@ uint32_t held_keycode_timer = 0;
 
 int current_layer = 0 ; // Updated in layer_state_set_user each time a layer change is made
 
-
 void cycle_encoder_mode(bool forward){
 	if (forward){ encoder_mode_count++ ; } // Shifts encoder mode forward
 	else {
@@ -286,7 +280,7 @@ void cycle_encoder_mode(bool forward){
 
 bool is_keyboard_locked = false ;
 
-void encoder_update_user(uint8_t index, bool clockwise) {
+bool encoder_update_user(uint8_t index, bool clockwise) {
 	if (!is_keyboard_locked) {
 		if (clockwise){
 			mapped_code = encoder_modes[ encoder_mode_count ].clockwise_key[ current_layer ];
@@ -319,19 +313,11 @@ void encoder_update_user(uint8_t index, bool clockwise) {
 			}
 		}
 	}
+	return true;
 }
 
 uint32_t held_click_timer = false;
 bool is_click_held;
-uint32_t encdbch_hold_timer;
-bool is_encdbch_held;
-void change_encoder_delay_behavior(void){
-	if (encoder_click_delay == ENCODER_LOW_DELAY){
-		encoder_click_delay = ENCODER_HIGH_DELAY;
-	} else {
-		encoder_click_delay = ENCODER_LOW_DELAY;
-	}
-}
 
 bool automatic_encoder_mode_cycle = false; // This flag registers if the encoder mode was automatically cycled 
 uint32_t blinking_timer;
@@ -341,21 +327,6 @@ led_t led_state;
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 	if (!is_keyboard_locked){
 		switch (keycode) {
-			case ENCDBCH:
-				/* This keycode controls the change of delay behavior of the encoder, that is, it allows the user to swap the delay behaviors (no-delay and delayed behavior) on-the-fly.
-				   The way this works is, at the beggining of the code a macro BEHAVIOR_CHANGE_DELAY was defined. The idea is that if the ENCDBCH click is held for more than that macro, the behavior is swapped.
-				   When the keycode is pressed, a timer encdbch is started; in the housekeeping_user function, which runs every end of matrix processing, the timer is sampled again and if the total held time was larger than BEHAVIOR_CHANGE_DELAY, the encoder behavior mode is swapped.
-				*/
-				if (record->event.pressed){
-					encdbch_hold_timer = timer_read32();
-					set_indicator_colors(WHITE);
-					is_encdbch_held = true;	
-				} else {
-					is_encdbch_held = false;
-					set_indicator_colors( encoder_modes[encoder_mode_count].indicator_color ); // Place indicator color back to the mode it was before
-					if ( timer_elapsed32(encdbch_hold_timer) > BEHAVIOR_CHANGE_DELAY) change_encoder_delay_behavior();
-				}
-				return false;			
 			case ENCODER_CLICK:
 				if (record->event.pressed) { // What to do when the encoder is pressed
 					is_click_held = true;
@@ -378,6 +349,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 					} else { // If the encoder click was held for more time than the delay:
 						if (!automatic_encoder_mode_cycle) cycle_encoder_mode(true);
 					};
+			//		held_click_timer = 0;
 					automatic_encoder_mode_cycle = false;
 				};
 				return false; // Skip all further processing of this key
@@ -440,7 +412,6 @@ bool led_update_kb(led_t led_state) {
 
 layer_state_t layer_state_set_user(layer_state_t state) {
 	current_layer = get_highest_layer(state);
-	
 	switch (current_layer) {
 		case 2:
 			writePin(BOT_INDICATOR_PIN, 0);
@@ -459,10 +430,9 @@ void housekeeping_task_user(void) { // The very important timer.
 			is_alt_tab_active = false;
 		}
 	}
-	if (is_encdbch_held && timer_elapsed32(encdbch_hold_timer) > BEHAVIOR_CHANGE_DELAY) set_indicator_colors(encoder_modes[encoder_mode_count].indicator_color) ;
-	if (is_click_held && timer_elapsed32(held_click_timer) > ENCODER_HIGH_DELAY ){
+	if (is_click_held && timer_elapsed32(held_click_timer) > encoder_click_delay ){
 		automatic_encoder_mode_cycle = true;
-		held_click_timer = timer_read32();
+		// held_click_timer = timer_read32();
 		cycle_encoder_mode(true);
 	}
 	if (is_keyboard_locked){
