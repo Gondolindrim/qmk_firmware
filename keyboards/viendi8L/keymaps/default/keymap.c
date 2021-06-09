@@ -49,7 +49,7 @@ int MODE1_COLOR[3] = {1,0,0};
 uint16_t MODE0_CLOCKWISE = KC_MNXT;
 uint16_t MODE0_COUNTERCLOCKWISE = KC_MPRV;
 
----------------------------------------
+--------------------------------------
        STARTUP COLOR
 ---------------------------------------
 During initialization of the microcontroller, from the operating system initialization to matrix initialization, which lasts for about two seconds, the keyboard is not usable. To signal that, you can set a STARTUP_COLOR variable that shines a specific color when the keyboard is in that initialization stage.
@@ -116,7 +116,7 @@ typedef struct _encoder_mode_t {
 const encoder_mode_t encoder_modes[] = {
 	{ .indicator_color = RED    , .clockwise_key = {KC_VOLD, ENCMDN, KC_NO  , KC_NO  }, .counterclockwise_key = {KC_VOLU, ENCMUP, KC_NO  , KC_NO  }, .clicked_key = {KC_MUTE, KC_MPLY, KC_NO  , KC_NO  } },
 	{ .indicator_color = GREEN  , .clockwise_key = {KC_WH_D, ENCMDN, KC_WH_D, KC_WH_D}, .counterclockwise_key = {KC_WH_U, ENCMUP, KC_WH_U, KC_WH_U}, .clicked_key = {KC_BTN1, KC_BTN1, KC_BTN1, KC_BTN1} },
-	{ .indicator_color = BLUE   , .clockwise_key = {ALTTABS, ENCMDN, ALTTABS, ALTTABS}, .counterclockwise_key = {ALTTABS, ENCMUP, ALTTABS, ALTTABS}, .clicked_key = {ALTTABC, ALTTABC, ALTTABC, ALTTABC} }, 
+	{ .indicator_color = BLUE   , .clockwise_key = {ALTTABS, ENCMDN, ALTTABS, ALTTABS}, .counterclockwise_key = {ALTTABS, ENCMUP, ALTTABS, ALTTABS}, .clicked_key = {ALTTABC, ALTTABC, ALTTABC, ALTTABC} }
 	// Insert your custom encoder mode here
 };
 
@@ -156,26 +156,26 @@ void keyboard_post_init_user(void){
 // ------------------------------------------------------------------------------------------------
 // Defining the FND key, short for FN DANCE: if held, turns layer 1 on and if tapped toggles layer 2
 // Define a type for as many tap dance states as you need
-typedef enum {
-    TD_NONE,
-    TD_UNKNOWN,
-    TD_SINGLE_TAP,
-    TD_SINGLE_HOLD
-} td_state_t;
-
-typedef struct {
-    bool is_press_action;
-    td_state_t state;
-} td_tap_t;
-
-// Declare the functions to be used with your tap dance key(s)
-
-// Function associated with all tap dances
-td_state_t cur_dance(qk_tap_dance_state_t *state);
-
-// Functions associated with individual tap dances
-void fnd_finished(qk_tap_dance_state_t *state, void *user_data);
-void fnd_reset(qk_tap_dance_state_t *state, void *user_data);
+//typedef enum {
+//    TD_NONE,
+//    TD_UNKNOWN,
+//    TD_SINGLE_TAP,
+//    TD_SINGLE_HOLD
+//} td_state_t;
+//
+//typedef struct {
+//    bool is_press_action;
+//    td_state_t state;
+//} td_tap_t;
+//
+//// Declare the functions to be used with your tap dance key(s)
+//
+//// Function associated with all tap dances
+//td_state_t cur_dance(qk_tap_dance_state_t *state);
+//
+//// Functions associated with individual tap dances
+//void fnd_finished(qk_tap_dance_state_t *state, void *user_data);
+//void fnd_reset(qk_tap_dance_state_t *state, void *user_data);
 // ------------------------------------------------------------------------------------------------
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -184,7 +184,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
               KC_PMNS, KC_P7  , KC_P8  , KC_P9  , KC_TAB , KC_Q   , KC_W   , KC_E   , KC_R   , KC_T   , KC_Y   , KC_U   , KC_I   , KC_O   , KC_P   , KC_LBRC, KC_RBRC, KC_BSLS,
               KC_PPLS, KC_P4  , KC_P5  , KC_P6  , TCAPS  , KC_A   , KC_S   , KC_D   , KC_F   , KC_G   , KC_H   , KC_J   , KC_K   , KC_L   , KC_SCLN, KC_QUOT, KC_ENT , KC_BSPC,
 	      KC_PENT, KC_P1  , KC_P2  , KC_P3  , KC_LSFT, KC_BSLS, KC_Z   , KC_X   , KC_C   , KC_V   , KC_B   , KC_N   , KC_M   , KC_COMM, KC_DOT , KC_SLSH, KC_RSFT, KC_NUHS,
-              KC_PENT, KC_P0  , KC_P0  , KC_PDOT, KC_LCTL,          KC_LGUI, KC_LALT,                   KC_SPC ,          TD(FND), KC_LEFT, KC_DOWN, KC_UP  , KC_RGHT, MO(1)
+              KC_PENT, KC_P0  , KC_P0  , KC_PDOT, KC_LCTL,          KC_LGUI, KC_LALT,                   KC_SPC ,          TG(2)  , KC_LEFT, KC_DOWN, KC_UP  , KC_RGHT, MO(1)
 	),
    [1] = LAYOUT_all(
         ENCODER_CLICK, KC_F10 , KC_F11 , KC_NLCK, KC_GRV , KC_EXLM, KC_AT  , KC_HASH, KC_DLR , KC_PERC, KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_UNDS, KC_PLUS, KC_NO  , 
@@ -198,7 +198,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
               KC_PMNS, KC_P7  , KC_P8  , KC_P9  , KC_TAB , KC_Q   , KC_W   , KC_E   , KC_R   , KC_T   , KC_Y   , KC_U   , KC_I   , KC_O   , KC_P   , KC_LBRC, KC_RBRC, KC_BSLS,
               KC_PPLS, KC_P4  , KC_P5  , KC_P6  , TCAPS  , KC_A   , KC_S   , KC_D   , KC_F   , KC_G   , KC_H   , KC_J   , KC_K   , KC_L   , KC_SCLN, KC_QUOT, KC_ENT , KC_BSPC,
 	      KC_PENT, KC_P1  , KC_P2  , KC_P3  , KC_LSFT, KC_BSLS, KC_Z   , KC_X   , KC_C   , KC_V   , KC_B   , KC_N   , KC_M   , KC_COMM, KC_DOT , KC_SLSH, KC_RSFT, KC_NUHS,
-              KC_PENT, KC_P0  , KC_P0  , KC_PDOT, KC_LCTL,          KC_LGUI, KC_LALT,                   KC_SPC ,          TD(FND), KC_LEFT, KC_DOWN, KC_UP  , KC_RGHT, MO(1)
+              KC_PENT, KC_P0  , KC_P0  , KC_PDOT, KC_LCTL,          KC_LGUI, KC_LALT,                   KC_SPC ,          TG(2)  , KC_LEFT, KC_DOWN, KC_UP  , KC_RGHT, MO(1)
 	),
    [3] = LAYOUT_all(
         ENCODER_CLICK, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, 
@@ -212,53 +212,52 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // FINISH FN TAPDANCE DEFINITIONS -----------------------------------------------------------------
 // Determine the tapdance state to return
 // Determine the current tap dance state
-td_state_t cur_dance(qk_tap_dance_state_t *state) {
-    if (state->count == 1) {
-        if (!state->pressed) return TD_SINGLE_TAP;
-        else return TD_SINGLE_HOLD;
-    }
-    else return TD_UNKNOWN;
-}
-
-// Initialize tap structure associated with example tap dance key
-static td_tap_t fnd_tap_state = {
-    .is_press_action = true,
-    .state = TD_NONE
-};
-
-// Functions that control what our tap dance key does
-void fnd_finished(qk_tap_dance_state_t *state, void *user_data) {
-    fnd_tap_state.state = cur_dance(state);
-    switch (fnd_tap_state.state) {
-        case TD_SINGLE_HOLD:
-            layer_on(1);
-            break;
-        case TD_SINGLE_TAP:
-            // Check to see if the layer is already set
-            if (layer_state_is(2)) {
-                // If already set, then switch it off
-                layer_off(2);
-            } else {
-                // If not already set, then switch the layer on
-                layer_on(2);
-            }
-            break;
-	default: break;
-    }
-}
-
-void fnd_reset(qk_tap_dance_state_t *state, void *user_data) {
-    // If the key was held down and now is released then switch off the layer
-    if (fnd_tap_state.state == TD_SINGLE_HOLD) {
-        layer_off(1);
-    }
-    fnd_tap_state.state = TD_NONE;
-}
-
-// Associate our tap dance key with its functionality
-qk_tap_dance_action_t tap_dance_actions[] = {
-    [FND] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, fnd_finished, fnd_reset, 275)
-};
+//td_state_t cur_dance(qk_tap_dance_state_t *state) {
+//	if (state->count == 1) {
+//		if (!state->pressed) return TD_SINGLE_TAP;
+//		else return TD_SINGLE_HOLD;
+//	}
+//	else return TD_UNKNOWN;
+//}
+//
+//// Initialize tap structure associated with example tap dance key
+//static td_tap_t fnd_tap_state = {
+//	.is_press_action = true,
+//	.state = TD_NONE
+//};
+//
+//// Functions that control what our tap dance key does
+//void fnd_finished(qk_tap_dance_state_t *state, void *user_data) {
+//	fnd_tap_state.state = cur_dance(state);
+//	switch (fnd_tap_state.state) {
+//		case TD_SINGLE_HOLD:
+//			layer_on(1);
+//			break;
+//		case TD_SINGLE_TAP:
+//			// Check to see if the layer is already set
+//			if (layer_state_is(2)) {
+//				// If already set, then switch it off
+//				layer_off(2);
+//			} else {
+//				// If not already set, then switch the layer on
+//				layer_on(2);
+//			}
+//			break;
+//		default:
+//			break;
+//	}
+//}
+//
+//void fnd_reset(qk_tap_dance_state_t *state, void *user_data) {
+//	// If the key was held down and now is released then switch off the layer
+//	if (fnd_tap_state.state == TD_SINGLE_HOLD) layer_off(1);
+//	fnd_tap_state.state = TD_NONE;
+//}
+//
+//// Associate our tap dance key with its functionality
+//qk_tap_dance_action_t tap_dance_actions[] = {
+//	[FND] = ACTION_TAP_DANCE_FN_ADVANCED_TIME(NULL, fnd_finished, fnd_reset, 275)
+//};
 // ------------------------------------------------------------------------------------------------
 
 bool is_alt_tab_active = false; // Flag to check if alt tab is active
