@@ -317,6 +317,8 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
 
 uint32_t held_click_timer = false;
 bool is_click_held;
+bool is_shift_held = false;
+uint32_t held_keycode_timer;
 
 bool automatic_encoder_mode_cycle = false; // This flag registers if the encoder mode was automatically cycled 
 uint32_t blinking_timer;
@@ -326,6 +328,11 @@ led_t led_state;
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 	if (!is_keyboard_locked){
 		switch (keycode) {
+			case KC_LSFT:
+			case KC_RSFT:
+				if (record->event.pressed) is_shift_held = true;
+				else is_shift_held = false;
+				return true;
 			case ENCODER_CLICK:
 				if (record->event.pressed) { // What to do when the encoder is pressed
 					is_click_held = true;
@@ -340,13 +347,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 								break;
 							default:
 								register_code( encoder_modes[ encoder_mode_count ].clicked_key[ current_layer ]  );
-								uint32_t held_keycode_timer = timer_read32();
+								held_keycode_timer = timer_read32();
 								while (timer_elapsed32(held_keycode_timer) < MEDIA_KEY_DELAY);
 								unregister_code( encoder_modes[ encoder_mode_count ].clicked_key[ current_layer ] );
 								break;
 						}
 					} else { // If the encoder click was held for more time than the delay:
-						if (!automatic_encoder_mode_cycle) cycle_encoder_mode(true);
+						if (!automatic_encoder_mode_cycle) {
+							if (is_shift_held) cycle_encoder_mode(false);
+							else cycle_encoder_mode(true);
+						}
 					};
 			//		held_click_timer = 0;
 					automatic_encoder_mode_cycle = false;
@@ -366,12 +376,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 			case TGLCK:
 				if (!record->event.pressed){
 					blinking_timer = timer_read32();
-					held_keycode_timer = timer_read32();
 					is_keyboard_locked = true;
 					writePin(TOP_INDICATOR_PIN, 0);
 					writePin(MID_INDICATOR_PIN, 0);
 					writePin(BOT_INDICATOR_PIN, 0);
-					while (timer_elapsed32(held_keycode_timer) < MEDIA_KEY_DELAY)  ;
 					are_leds_lit = true;
 				}
 				return false;
@@ -431,8 +439,9 @@ void housekeeping_task_user(void) { // The very important timer.
 	}
 	if (is_click_held && timer_elapsed32(held_click_timer) > encoder_click_delay ){
 		automatic_encoder_mode_cycle = true;
-		// held_click_timer = timer_read32();
-		cycle_encoder_mode(true);
+		held_click_timer = timer_read32();
+		if (is_shift_held) cycle_encoder_mode(false);
+		else cycle_encoder_mode(true);
 	}
 	if (is_keyboard_locked){
 		if ( timer_elapsed32(blinking_timer) > BLINKING_TIME ){
