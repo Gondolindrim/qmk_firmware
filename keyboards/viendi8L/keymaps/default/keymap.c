@@ -88,7 +88,7 @@ enum keyboard_keycodes {
 	ENCMUP, // Encoder mode up
 	ENCMDN, // Encoder mode down
 	TGLCK,  // Toggle lock mode
-	FND     // Toggle layer 2 on tap, turn layer 1 on hold
+	TD_FND     // Toggle layer 2 on tap, turn layer 1 on hold
 };
 
 uint16_t encoder_click_delay = ENCODER_MODE_CHANGE_DELAY;
@@ -184,7 +184,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
               KC_PMNS, KC_P7  , KC_P8  , KC_P9  , KC_TAB , KC_Q   , KC_W   , KC_E   , KC_R   , KC_T   , KC_Y   , KC_U   , KC_I   , KC_O   , KC_P   , KC_LBRC, KC_RBRC, KC_BSLS,
               KC_PPLS, KC_P4  , KC_P5  , KC_P6  , TCAPS  , KC_A   , KC_S   , KC_D   , KC_F   , KC_G   , KC_H   , KC_J   , KC_K   , KC_L   , KC_SCLN, KC_QUOT, KC_ENT , KC_BSPC,
 	      KC_PENT, KC_P1  , KC_P2  , KC_P3  , KC_LSFT, KC_BSLS, KC_Z   , KC_X   , KC_C   , KC_V   , KC_B   , KC_N   , KC_M   , KC_COMM, KC_DOT , KC_SLSH, KC_RSFT, KC_NUHS,
-              KC_PENT, KC_P0  , KC_P0  , KC_PDOT, KC_LCTL,          KC_LGUI, KC_LALT,                   KC_SPC ,          TD(FND), KC_LEFT, KC_DOWN, KC_UP  , KC_RGHT, MO(1)
+              KC_PENT, KC_P0  , KC_P0  , KC_PDOT, KC_LCTL,          KC_LGUI, KC_LALT,                   KC_SPC ,          TD(TD_FND), KC_LEFT, KC_DOWN, KC_UP  , KC_RGHT, MO(1)
 	),
    [1] = LAYOUT_all(
         ENCODER_CLICK, KC_F10 , KC_F11 , KC_NLCK, KC_GRV , KC_EXLM, KC_AT  , KC_HASH, KC_DLR , KC_PERC, KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_UNDS, KC_PLUS, KC_NO  , 
@@ -198,7 +198,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
               KC_PMNS, KC_P7  , KC_P8  , KC_P9  , KC_TAB , KC_Q   , KC_W   , KC_E   , KC_R   , KC_T   , KC_Y   , KC_U   , KC_I   , KC_O   , KC_P   , KC_LBRC, KC_RBRC, KC_BSLS,
               KC_PPLS, KC_P4  , KC_P5  , KC_P6  , TCAPS  , KC_A   , KC_S   , KC_D   , KC_F   , KC_G   , KC_H   , KC_J   , KC_K   , KC_L   , KC_SCLN, KC_QUOT, KC_ENT , KC_BSPC,
 	      KC_PENT, KC_P1  , KC_P2  , KC_P3  , KC_LSFT, KC_BSLS, KC_Z   , KC_X   , KC_C   , KC_V   , KC_B   , KC_N   , KC_M   , KC_COMM, KC_DOT , KC_SLSH, KC_RSFT, KC_NUHS,
-              KC_PENT, KC_P0  , KC_P0  , KC_PDOT, KC_LCTL,          KC_LGUI, KC_LALT,                   KC_SPC ,          TD(FND), KC_LEFT, KC_DOWN, KC_UP  , KC_RGHT, MO(1)
+              KC_PENT, KC_P0  , KC_P0  , KC_PDOT, KC_LCTL,          KC_LGUI, KC_LALT,                   KC_SPC ,          TD(TD_FND), KC_LEFT, KC_DOWN, KC_UP  , KC_RGHT, MO(1)
 	),
    [3] = LAYOUT_all(
         ENCODER_CLICK, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, 
@@ -235,8 +235,7 @@ void fnd_finished(qk_tap_dance_state_t *state, void *user_data) {
 			break;
 		case TD_SINGLE_TAP:
 			// Check to see if the layer is already set
-			if (layer_state_is(2)) layer_off(2);
-			else layer_on(2);
+			layer_invert(2);
 			break;
 		default:
 			break;
@@ -251,7 +250,7 @@ void fnd_reset(qk_tap_dance_state_t *state, void *user_data) {
 
 // Associate our tap dance key with its functionality
 qk_tap_dance_action_t tap_dance_actions[] = {
-	//[FND] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, fnd_finished, fnd_reset)km8i8ikm8ik<F8>ikm 
+	[TD_FND] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, fnd_finished, fnd_reset)
 };
 // ------------------------------------------------------------------------------------------------
 
