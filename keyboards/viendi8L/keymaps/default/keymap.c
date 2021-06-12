@@ -96,7 +96,7 @@ enum keyboard_keycodes {
 	ENCMUP, // Encoder mode up
 	ENCMDN, // Encoder mode down
 	TGLCK,  // Toggle lock mode
-	FND     // Toggle layer 2 on tap, turn layer 1 on hold
+	TD_FND     // Toggle layer 2 on tap, turn layer 1 on hold
 };
 
 uint16_t encoder_click_delay = ENCODER_MODE_CHANGE_DELAY;
@@ -167,7 +167,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
               KC_PMNS, KC_P7  , KC_P8  , KC_P9  , KC_TAB , KC_Q   , KC_W   , KC_E   , KC_R   , KC_T   , KC_Y   , KC_U   , KC_I   , KC_O   , KC_P   , KC_LBRC, KC_RBRC, KC_BSLS,
               KC_PPLS, KC_P4  , KC_P5  , KC_P6  , TCAPS  , KC_A   , KC_S   , KC_D   , KC_F   , KC_G   , KC_H   , KC_J   , KC_K   , KC_L   , KC_SCLN, KC_QUOT, KC_ENT , KC_BSPC,
 	      KC_PENT, KC_P1  , KC_P2  , KC_P3  , KC_LSFT, KC_BSLS, KC_Z   , KC_X   , KC_C   , KC_V   , KC_B   , KC_N   , KC_M   , KC_COMM, KC_DOT , KC_SLSH, KC_RSFT, KC_NUHS,
-              KC_PENT, KC_P0  , KC_P0  , KC_PDOT, KC_LCTL,          KC_LGUI, KC_LALT,                   KC_SPC ,          TD(TD_FND), KC_LEFT, KC_DOWN, KC_UP  , KC_RGHT, MO(1)
+              KC_PENT, KC_P0  , KC_P0  , KC_PDOT, KC_LCTL,          KC_LGUI, KC_LALT,                   KC_SPC ,          TD_FND , KC_LEFT, KC_DOWN, KC_UP  , KC_RGHT, MO(1)
 	),
    [1] = LAYOUT_all(
         ENCODER_CLICK, KC_F10 , KC_F11 , KC_NLCK, KC_GRV , KC_EXLM, KC_AT  , KC_HASH, KC_DLR , KC_PERC, KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_UNDS, KC_PLUS, KC_NO  , 
@@ -181,7 +181,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
               KC_PMNS, KC_P7  , KC_P8  , KC_P9  , KC_TAB , KC_Q   , KC_W   , KC_E   , KC_R   , KC_T   , KC_Y   , KC_U   , KC_I   , KC_O   , KC_P   , KC_LBRC, KC_RBRC, KC_BSLS,
               KC_PPLS, KC_P4  , KC_P5  , KC_P6  , TCAPS  , KC_A   , KC_S   , KC_D   , KC_F   , KC_G   , KC_H   , KC_J   , KC_K   , KC_L   , KC_SCLN, KC_QUOT, KC_ENT , KC_BSPC,
 	      KC_PENT, KC_P1  , KC_P2  , KC_P3  , KC_LSFT, KC_BSLS, KC_Z   , KC_X   , KC_C   , KC_V   , KC_B   , KC_N   , KC_M   , KC_COMM, KC_DOT , KC_SLSH, KC_RSFT, KC_NUHS,
-              KC_PENT, KC_P0  , KC_P0  , KC_PDOT, KC_LCTL,          KC_LGUI, KC_LALT,                   KC_SPC ,          TD(TD_FND), KC_LEFT, KC_DOWN, KC_UP  , KC_RGHT, MO(1)
+              KC_PENT, KC_P0  , KC_P0  , KC_PDOT, KC_LCTL,          KC_LGUI, KC_LALT,                   KC_SPC ,          TD_FND , KC_LEFT, KC_DOWN, KC_UP  , KC_RGHT, MO(1)
 	),
    [3] = LAYOUT_all(
         ENCODER_CLICK, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, 
@@ -205,7 +205,7 @@ void cycle_encoder_mode(bool forward){
 	if (forward){ encoder_mode_count++ ; } // Shifts encoder mode forward
 	else {
 		encoder_mode_count-- ;
-		if (encoder_mode_count == -1){ encoder_mode_count = NUM_ENCODER_MODES - 1; }
+		if (encoder_mode_count == -1) encoder_mode_count = NUM_ENCODER_MODES - 1;
 	} // Shifts encoder mode backward
 	encoder_mode_count = encoder_mode_count%NUM_ENCODER_MODES ; // This makes sure encoder_mode_count keeps cycling between 0,1,...,NUM_ENCODER_MODES and doesnt eventually overflow
 	set_indicator_colors( encoder_modes[ encoder_mode_count ].indicator_color ); // Set indicator color to the corresponding defined color
@@ -215,11 +215,8 @@ bool is_keyboard_locked = false ;
 
 bool encoder_update_user(uint8_t index, bool clockwise) {
 	if (!is_keyboard_locked) {
-		if (clockwise){
-			mapped_code = encoder_modes[ encoder_mode_count ].clockwise_key[ current_layer ];
-		} else {
-			mapped_code = encoder_modes[ encoder_mode_count ].counterclockwise_key[ current_layer ];
-		}
+		if (clockwise)	mapped_code = encoder_modes[ encoder_mode_count ].clockwise_key[ current_layer ];
+		else mapped_code = encoder_modes[ encoder_mode_count ].counterclockwise_key[ current_layer ];
 		switch (mapped_code) {
 			case ALTTABS:
 				if(!is_alt_tab_active) {
@@ -249,7 +246,10 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
 	return true;
 }
 
-uint32_t held_click_timer = false;
+uint32_t held_click_timer = 0;
+bool is_fnd_held = false;
+#define FND_DELAY 500
+uint32_t fnd_held_timer = 0;
 bool is_click_held = false;
 bool is_shift_held = false;
 bool automatic_encoder_mode_cycle = false; // This flag registers if the encoder mode was automatically cycled 
@@ -261,6 +261,17 @@ led_t led_state;
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 	if (!is_keyboard_locked){
 		switch (keycode) {
+			case TD_FND:
+				if (record->event.pressed) {
+					fnd_held_timer = timer_read32();
+					is_fnd_held = true;
+				} else {
+					if (timer_elapsed32(fnd_held_timer) < FND_DELAY) layer_invert(2);
+					else layer_off(1);
+					fnd_held_timer = 0;
+					is_fnd_held = false;
+				}
+				return true;
 			case KC_LSFT:
 			case KC_RSFT:
 				if (record->event.pressed) is_shift_held = true;
@@ -385,6 +396,7 @@ void housekeeping_task_user(void) { // The very important timer.
 			is_alt_tab_active = false;
 		}
 	}
+	if (is_fnd_held && timer_elapsed32(fnd_held_timer) > FND_DELAY) layer_on(1);
 	#if ENCODER_DELAYED_MODE
 	if (is_click_held && timer_elapsed32(held_click_timer) > encoder_click_delay ){
 		automatic_encoder_mode_cycle = true;
