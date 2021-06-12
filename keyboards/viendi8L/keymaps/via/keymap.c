@@ -268,6 +268,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 				} else {
 					if (timer_elapsed32(fnd_held_timer) < FND_DELAY) layer_invert(2);
 					else layer_off(1);
+					// Little delay to avoid fast turning on and off the tapping
+					held_keycode_timer = timer_read32();
+					while (timer_elapsed32(held_keycode_timer) < MEDIA_KEY_DELAY);
 					fnd_held_timer = 0;
 					is_fnd_held = false;
 				}
