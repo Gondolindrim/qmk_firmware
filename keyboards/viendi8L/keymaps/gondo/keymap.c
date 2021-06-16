@@ -17,8 +17,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include<print.h>
 #include QMK_KEYBOARD_H
 #define MEDIA_KEY_DELAY 10
-#define ALT_TAB_DELAY 1000
+#define ALT_TAB_DELAY 3000
 pin_t rgb_indicators_pins[ RGB_PIN_COUNT ] = {RED_INDICATOR_PIN, GREEN_INDICATOR_PIN, BLUE_INDICATOR_PIN};
+
+#define ENCODER_DELAYED_MODE TRUE
+#define ENCODER_MODE_CHANGE_DELAY 500
+
 /*
 ---------------------------------------
        VIENDI 8L KEYMAP FILE
@@ -85,12 +89,10 @@ By default, from top to bottom, those indicators are the caps lock indicator, nu
 
 	The second behavior is the delayed mode. In this mode, the encoder click can be used in clicks and holds. If you click the encoder, it will read the ".clicked_key" property and use that keycode normally. However, if you hold the encoder for more than a set time, it cycles modes forwards (or backwards if the shift key is held); the minimum hold time is defined by ENCODER_MODE_CHANGE_DELAY. The encoder keeps changing modes as long as you hold the click. To use this delayed mode, you have to define ENCODER_DELAYED_MODE as TRUE and also define ENCODER_MODE_CHANGE_DELAY; default is 500 (ms).
 */
-#define ENCODER_DELAYED_MODE TRUE
-#define ENCODER_MODE_CHANGE_DELAY 500
 
 // Defining encoder click keycode
 enum keyboard_keycodes {
-        ENCODER_CLICK = SAFE_RANGE,
+        ENCODER_CLICK = 0x5F80,
 	ALTTABS,// For alt-tab-switch
 	ALTTABC,// For alt-tab-click
 	ENCMUP, // Encoder mode up
@@ -122,9 +124,9 @@ typedef struct _encoder_mode_t {
 } encoder_mode_t;
 
 const encoder_mode_t encoder_modes[] = {
-	{ .indicator_color = RED    , .clockwise_key = {KC_VOLD, ENCMDN, KC_NO  , KC_NO  }, .counterclockwise_key = {KC_VOLU, ENCMUP, KC_NO  , KC_NO  }, .clicked_key = {KC_MUTE,KC_MPLY, KC_NO  , KC_NO  } },
-	{ .indicator_color = GREEN  , .clockwise_key = {KC_WH_D, ENCMDN, KC_WH_D, KC_WH_D}, .counterclockwise_key = {KC_WH_U, ENCMUP, KC_WH_U, KC_WH_U}, .clicked_key = {KC_BTN1, KC_BTN1, KC_BTN1, KC_BTN1} },
-	{ .indicator_color = BLUE   , .clockwise_key = {ALTTABS, ENCMDN, ALTTABS, ALTTABS}, .counterclockwise_key = {ALTTABS, ENCMUP, ALTTABS, ALTTABS}, .clicked_key = {KC_BTN1, ALTTABC, ALTTABC, ALTTABC} }
+	{ .indicator_color = PINK   , .clockwise_key = {KC_VOLD, KC_VOLD, ENCMDN, KC_VOLD}, .counterclockwise_key = {KC_VOLU, KC_VOLU, ENCMUP, KC_VOLU}, .clicked_key = {KC_MUTE, KC_MPLY, KC_MUTE, KC_MUTE} },
+	{ .indicator_color = CYAN   , .clockwise_key = {KC_WH_D, KC_WH_D, ENCMDN, KC_WH_D}, .counterclockwise_key = {KC_WH_U, KC_WH_U, ENCMUP, KC_WH_U}, .clicked_key = {KC_BTN1, KC_BTN1, KC_BTN1, KC_BTN1} },
+	{ .indicator_color = YELLOW , .clockwise_key = {ALTTABS, ALTTABS, ENCMDN, ALTTABS}, .counterclockwise_key = {ALTTABS, ALTTABS, ENCMUP, ALTTABS}, .clicked_key = {ALTTABC, ALTTABC, ALTTABC, ALTTABC} }
 	// Insert your custom encoder mode here
 };
 
@@ -159,7 +161,7 @@ void keyboard_post_init_user(void){
 	for (pin_count = 0 ; pin_count < RGB_PIN_COUNT ; pin_count++) writePin(rgb_indicators_pins[pin_count], encoder_modes[0].indicator_color[pin_count]);
 };
 
-#define TCAPS LT(1, KC_CAPS) // Tap-CAPS configuration: MO(1) when held, CAPS when tapped
+#define TCAPS LT(2, KC_CAPS) // Tap-CAPS configuration: MO(1) when held, CAPS when tapped
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    [0] = LAYOUT_all(
@@ -167,29 +169,29 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
               KC_PMNS, KC_P7  , KC_P8  , KC_P9  , KC_TAB , KC_Q   , KC_W   , KC_E   , KC_R   , KC_T   , KC_Y   , KC_U   , KC_I   , KC_O   , KC_P   , KC_LBRC, KC_RBRC, KC_BSLS,
               KC_PPLS, KC_P4  , KC_P5  , KC_P6  , TCAPS  , KC_A   , KC_S   , KC_D   , KC_F   , KC_G   , KC_H   , KC_J   , KC_K   , KC_L   , KC_SCLN, KC_QUOT, KC_ENT , KC_BSPC,
 	      KC_PENT, KC_P1  , KC_P2  , KC_P3  , KC_LSFT, KC_BSLS, KC_Z   , KC_X   , KC_C   , KC_V   , KC_B   , KC_N   , KC_M   , KC_COMM, KC_DOT , KC_SLSH, KC_RSFT, KC_NUHS,
-              KC_PENT, KC_P0  , KC_P0  , KC_PDOT, KC_LCTL,          KC_LGUI, KC_LALT,                   KC_SPC ,          TD_FND , KC_LEFT, KC_DOWN, KC_UP  , KC_RGHT, MO(1)
+              KC_PENT, KC_P0  , KC_P0  , KC_PDOT, KC_LCTL,          KC_LGUI, KC_LALT,                   KC_SPC ,          TD_FND , KC_LEFT, KC_DOWN, KC_UP  , KC_RGHT, MO(2)
 	),
    [1] = LAYOUT_all(
-        ENCODER_CLICK, KC_F10 , KC_F11 , KC_NLCK, KC_GRV , KC_EXLM, KC_AT  , KC_HASH, KC_DLR , KC_PERC, KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_UNDS, KC_PLUS, KC_NO  , 
-              KC_MINS, KC_F7  , KC_F8  , KC_F9  , TG(2)  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_INS , KC_NO  , KC_PSCR, KC_NO  , KC_NO  , KC_NO  ,
-              KC_EQL , KC_F4  , KC_F5  , KC_F6  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  ,
-              KC_NO  , KC_F1  , KC_F2  , KC_F3  , KC_NO  , KC_LPRN, KC_RPRN, KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , 
-              KC_NO  , KC_CALC, KC_CALC, KC_DEL , TGLCK  ,          KC_SLEP, KC_NO  ,                   KC_NO  ,          KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO
-        ),
-   [2] = LAYOUT_all(
         ENCODER_CLICK, KC_PSLS, KC_PAST, KC_BSPC, KC_GESC, KC_F1  , KC_F2  , KC_F3  , KC_F4  , KC_F5  , KC_F6  , KC_F7  , KC_F8  , KC_F9  , KC_F10 , KC_F11 , KC_F12 , KC_BSPC,
               KC_PMNS, KC_P7  , KC_P8  , KC_P9  , KC_TAB , KC_Q   , KC_W   , KC_E   , KC_R   , KC_T   , KC_Y   , KC_U   , KC_I   , KC_O   , KC_P   , KC_LBRC, KC_RBRC, KC_BSLS,
               KC_PPLS, KC_P4  , KC_P5  , KC_P6  , TCAPS  , KC_A   , KC_S   , KC_D   , KC_F   , KC_G   , KC_H   , KC_J   , KC_K   , KC_L   , KC_SCLN, KC_QUOT, KC_ENT , KC_BSPC,
 	      KC_PENT, KC_P1  , KC_P2  , KC_P3  , KC_LSFT, KC_BSLS, KC_Z   , KC_X   , KC_C   , KC_V   , KC_B   , KC_N   , KC_M   , KC_COMM, KC_DOT , KC_SLSH, KC_RSFT, KC_NUHS,
-              KC_PENT, KC_P0  , KC_P0  , KC_PDOT, KC_LCTL,          KC_LGUI, KC_LALT,                   KC_SPC ,          TD_FND , KC_LEFT, KC_DOWN, KC_UP  , KC_RGHT, MO(1)
+              KC_PENT, KC_P0  , KC_P0  , KC_PDOT, KC_LCTL,          KC_LGUI, KC_LALT,                   KC_SPC ,          TD_FND , KC_LEFT, KC_DOWN, KC_UP  , KC_RGHT, MO(2)
 	),
+   [2] = LAYOUT_all(
+        ENCODER_CLICK, KC_F10 , KC_F11 , KC_NLCK, KC_GRV , KC_EXLM, KC_AT  , KC_HASH, KC_DLR , KC_PERC, KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_UNDS, KC_PLUS, KC_NO  , 
+              KC_MINS, KC_F7  , KC_F8  , KC_F9  , KC_TAB , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_INS , KC_NO  , KC_PSCR, KC_NO  , KC_NO  , KC_NO  ,
+              KC_EQL , KC_F4  , KC_F5  , KC_F6  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  ,
+              KC_NO  , KC_F1  , KC_F2  , KC_F3  , KC_NO  , KC_LPRN, KC_RPRN, KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , 
+              KC_NO  , KC_CALC, KC_CALC, KC_DEL , TGLCK  ,          KC_SLEP, KC_NO  ,                   KC_NO  ,          KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_TRNS
+        ),
    [3] = LAYOUT_all(
-        ENCODER_CLICK, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, 
-              KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
-              KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
-              KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, 
-              KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,          KC_TRNS, KC_TRNS,                   KC_TRNS,          KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS
-        )
+        ENCODER_CLICK, KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  ,
+              KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , 
+              KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , 
+              KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , 
+              KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  ,          KC_NO  , KC_NO  ,                   KC_NO  ,          KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO 
+        )     		
 };
 
 // ------------------------------------------------------------------------------------------------
@@ -202,11 +204,10 @@ uint32_t held_keycode_timer = 0;
 int current_layer = 0 ; // Updated in layer_state_set_user each time a layer change is made
 
 void cycle_encoder_mode(bool forward){
-	if (forward){ encoder_mode_count++ ; } // Shifts encoder mode forward
-	else {
-		encoder_mode_count-- ;
-		if (encoder_mode_count == -1) encoder_mode_count = NUM_ENCODER_MODES - 1;
-	} // Shifts encoder mode backward
+	if (forward) encoder_mode_count++ ;  // Shifts encoder mode forward
+	else encoder_mode_count-- ;
+	if (encoder_mode_count == -1) encoder_mode_count = NUM_ENCODER_MODES - 1;
+	// Shifts encoder mode backward
 	encoder_mode_count = encoder_mode_count%NUM_ENCODER_MODES ; // This makes sure encoder_mode_count keeps cycling between 0,1,...,NUM_ENCODER_MODES and doesnt eventually overflow
 	set_indicator_colors( encoder_modes[ encoder_mode_count ].indicator_color ); // Set indicator color to the corresponding defined color
 }
@@ -256,7 +257,27 @@ bool automatic_encoder_mode_cycle = false; // This flag registers if the encoder
 uint32_t blinking_timer = 0;
 #define BLINKING_TIME 500
 bool are_leds_lit = false;
+
+// This bool records if LALT is pressed or not. Due to the automatic disabling of the ALT-TAB of the ALTTABS custom keystroke, the automatic disabling can un-register KC_LALT even when the LALT key is phisically pressed. Hence there needs to be two bools: one that keebs track of the ALT-TAB activity and one that keeps track of LALT so that the automatic disabling will not disable LALT if it is phisically pressed.
+bool is_lalt_pressed = false;
 led_t led_state;
+
+void lock_keyboard(void){
+	blinking_timer = timer_read32();
+	is_keyboard_locked = true;
+	writePin(TOP_INDICATOR_PIN, 0);
+	writePin(MID_INDICATOR_PIN, 0);
+	writePin(BOT_INDICATOR_PIN, 0);
+	are_leds_lit = true;
+}
+
+void unlock_keyboard(void) {
+	writePin(BOT_INDICATOR_PIN, !IS_LAYER_ON(1));
+	writePin(TOP_INDICATOR_PIN, !led_state.num_lock);
+	writePin(MID_INDICATOR_PIN, !led_state.caps_lock);
+	are_leds_lit = false;
+	blinking_timer = 0;
+}
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 	if (!is_keyboard_locked){
@@ -266,8 +287,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 					fnd_held_timer = timer_read32();
 					is_fnd_held = true;
 				} else {
-					if (timer_elapsed32(fnd_held_timer) < FND_DELAY) layer_invert(2);
-					else layer_off(1);
+					if (timer_elapsed32(fnd_held_timer) < FND_DELAY) layer_invert(1);
+					else layer_off(2);
 					// Little delay to avoid fast turning on and off the tapping
 					held_keycode_timer = timer_read32();
 					while (timer_elapsed32(held_keycode_timer) < MEDIA_KEY_DELAY);
@@ -297,8 +318,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 						if (timer_elapsed32(held_click_timer) < encoder_click_delay && !automatic_encoder_mode_cycle ){ // Checking if the time the encoder click was held was smaller than the delay defined and if an automatic mode change was not already performed. If it was, just register whatever it is the click does.
 							switch ( encoder_modes[ encoder_mode_count ].clicked_key[ current_layer ] ){
 								case ALTTABC:
-									unregister_code(KC_LALT);
-									is_alt_tab_active = false;
+									if (is_alt_tab_active) {
+										if (!is_lalt_pressed) unregister_code(KC_LALT);
+										is_alt_tab_active = false;
+									}
 									break;
 								case ENCMUP:
 									cycle_encoder_mode(true);
@@ -325,9 +348,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 				};
 				return false; // Skip all further processing of this key
 			case KC_LALT: // If this is not defined, if the encoder is activated in the alt-tab mode while the LALT key is pressed, the menu goes away.
-				if (record->event.pressed){
-					is_alt_tab_active = true;
-				}
+				if (record->event.pressed) is_lalt_pressed = true;
+				else is_lalt_pressed = false;				
 				return true;
 			case ENCMUP:
 				cycle_encoder_mode(true);
@@ -336,14 +358,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 				cycle_encoder_mode(false);
 				return false;
 			case TGLCK:
-				if (!record->event.pressed){
-					blinking_timer = timer_read32();
-					is_keyboard_locked = true;
-					writePin(TOP_INDICATOR_PIN, 0);
-					writePin(MID_INDICATOR_PIN, 0);
-					writePin(BOT_INDICATOR_PIN, 0);
-					are_leds_lit = true;
-				}
+				if (!record->event.pressed) lock_keyboard();
 				return false;
 			default:
 				return true; // Process all other keycodes normally
@@ -351,21 +366,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 	} else {
 		switch (keycode){
 			case TGLCK:
-				if (!record->event.pressed){
-					is_keyboard_locked = false;
-				}
-				// Resetting top, mid and bottom indicators to state they were before the lock
-				led_state = host_keyboard_led_state();
-				writePin(TOP_INDICATOR_PIN, !led_state.num_lock);
-				writePin(MID_INDICATOR_PIN, !led_state.caps_lock);
-				writePin(BOT_INDICATOR_PIN, !IS_LAYER_ON(2));
-				are_leds_lit = false;
+				if (!record->event.pressed) unlock_keyboard();
 				return false;
 			default:
 				return false;
 		}
 	}
-};
+}
 
 // Setting up caps lock and num lock indicators
 bool led_update_kb(led_t led_state) {
@@ -382,7 +389,7 @@ bool led_update_kb(led_t led_state) {
 layer_state_t layer_state_set_user(layer_state_t state) {
 	current_layer = get_highest_layer(state);
 	switch (current_layer) {
-		case 2:
+		case 1:
 			writePin(BOT_INDICATOR_PIN, 0);
 			break;
 		default: //  for any other layers, or the default layer
@@ -393,13 +400,14 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 }
 
 void housekeeping_task_user(void) { // The very important timer.
-	if (is_alt_tab_active) {
-		if (timer_elapsed32(alt_tab_timer) > ALT_TAB_DELAY) {
+	if (is_alt_tab_active){ 
+		if (is_lalt_pressed) alt_tab_timer = timer_read32();
+		else if (timer_elapsed32(alt_tab_timer) > ALT_TAB_DELAY) {
 			unregister_code(KC_LALT);
 			is_alt_tab_active = false;
 		}
 	}
-	if (is_fnd_held && timer_elapsed32(fnd_held_timer) > FND_DELAY) layer_on(1);
+	if (is_fnd_held && timer_elapsed32(fnd_held_timer) > FND_DELAY) layer_on(2);
 	#if ENCODER_DELAYED_MODE
 	if (is_click_held && timer_elapsed32(held_click_timer) > encoder_click_delay ){
 		automatic_encoder_mode_cycle = true;
@@ -415,16 +423,5 @@ void housekeeping_task_user(void) { // The very important timer.
 			writePin(BOT_INDICATOR_PIN, are_leds_lit);
 			blinking_timer = timer_read32();
 		}
-	} else writePin(BOT_INDICATOR_PIN, !IS_LAYER_ON(2));
+	}
 }
-
-//void matrix_scan_user(void){
-//	if (is_keyboard_locked){
-//		if ( timer_elapsed32(blinking_timer) > BLINKING_TIME ){
-//			writePin(TOP_INDICATOR_PIN, are_leds_lit = !are_leds_lit);
-//			writePin(MID_INDICATOR_PIN, are_leds_lit);
-//			writePin(BOT_INDICATOR_PIN, are_leds_lit);
-//			blinking_timer = timer_read32();
-//		}
-//	}
-//}
