@@ -16,11 +16,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include<print.h>
 #include QMK_KEYBOARD_H
-#define MEDIA_KEY_DELAY 10
-#define ALT_TAB_DELAY 3000
+#define MEDIA_KEY_DELAY 100
+#define ALT_TAB_DELAY 2000
 pin_t rgb_indicators_pins[ RGB_PIN_COUNT ] = {RED_INDICATOR_PIN, GREEN_INDICATOR_PIN, BLUE_INDICATOR_PIN};
 
-#define ENCODER_DELAYED_MODE FALSE
+#define ENCODER_DELAYED_MODE TRUE
 #define ENCODER_MODE_CHANGE_DELAY 500
 
 /*
@@ -161,7 +161,7 @@ void keyboard_post_init_user(void){
 	for (pin_count = 0 ; pin_count < RGB_PIN_COUNT ; pin_count++) writePin(rgb_indicators_pins[pin_count], encoder_modes[0].indicator_color[pin_count]);
 };
 
-#define TCAPS LT(2, KC_CAPS) // Tap-CAPS configuration: MO(1) when held, CAPS when tapped
+#define TCAPS LT(2, KC_CAPS) // Tap-CAPS configuration: MO(2) when held, CAPS when tapped
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    [0] = LAYOUT_all(
@@ -182,8 +182,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         ENCODER_CLICK, KC_F10 , KC_F11 , KC_NLCK, KC_GRV , KC_EXLM, KC_AT  , KC_HASH, KC_DLR , KC_PERC, KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_UNDS, KC_PLUS, KC_NO  , 
               KC_MINS, KC_F7  , KC_F8  , KC_F9  , KC_TAB , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_INS , KC_NO  , KC_PSCR, KC_NO  , KC_NO  , KC_NO  ,
               KC_EQL , KC_F4  , KC_F5  , KC_F6  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  ,
-              KC_NO  , KC_F1  , KC_F2  , KC_F3  , KC_NO  , KC_LPRN, KC_RPRN, KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , 
-              KC_NO  , KC_CALC, KC_CALC, KC_DEL , TGLCK  ,          KC_SLEP, KC_NO  ,                   KC_NO  ,          KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_TRNS
+              KC_NO  , KC_F1  , KC_F2  , KC_F3  , KC_NO  , KC_LPRN, KC_RPRN, KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_MUTE, KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , 
+              KC_NO  , KC_CALC, KC_CALC, KC_DEL , TGLCK  ,          KC_SLEP, KC_NO  ,                   KC_NO  ,          KC_TRNS, KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_TRNS
         ),
    [3] = LAYOUT_all(
         ENCODER_CLICK, KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  , KC_NO  ,
@@ -249,7 +249,7 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
 
 uint32_t held_click_timer = 0;
 bool is_fnd_held = false;
-#define FND_DELAY 500
+#define FND_DELAY 200
 uint32_t fnd_held_timer = 0;
 bool is_click_held = false;
 bool is_shift_held = false;
@@ -277,76 +277,86 @@ void unlock_keyboard(void) {
 	writePin(MID_INDICATOR_PIN, !led_state.caps_lock);
 	are_leds_lit = false;
 	blinking_timer = 0;
+	is_keyboard_locked = false;
+	layer_off(2);
+}
+
+void handle_tdfnd(bool pressed){
+	if (pressed) {
+		fnd_held_timer = timer_read32();
+		is_fnd_held = true;
+	} else {
+		if (timer_elapsed32(fnd_held_timer) < FND_DELAY) layer_invert(1);
+		else layer_off(2);
+		// Little delay to avoid fast turning on and off the tapping
+		held_keycode_timer = timer_read32();
+		while (timer_elapsed32(held_keycode_timer) < MEDIA_KEY_DELAY);
+		fnd_held_timer = 0;
+		is_fnd_held = false;
+	}
+}
+
+void handle_encoder_click(bool pressed){
+	if (pressed){
+		is_click_held = true;
+		#if ENCODER_DELAYED_MODE
+			held_click_timer = timer_read32(); // If the encoder delayed mode change is on, triggers a timer
+		#else
+			if (is_shift_held) cycle_encoder_mode(false); // If the encoder delayed mode is not on, just cycle mode
+			else cycle_encoder_mode(true);
+		#endif
+	} else { // What to do when encoder is released
+		is_click_held = false;
+
+		// if the encoder delayed mode change is on, that is, ENCODER_DELAYED_MODE is defined and equals TRUE, then scans for the time the click was pressed and does what it has to do  -- sample the timer which was triggered on press and use the sampled time to either send out the click key or change mode in case the click is held for more than ENCODER_MODE_CHANGE_DELAY
+		#if ENCODER_DELAYED_MODE
+			if (timer_elapsed32(held_click_timer) < encoder_click_delay && !automatic_encoder_mode_cycle ){ // Checking if the time the encoder click was held was smaller than the delay defined and if an automatic mode change was not already performed. If it was, just register whatever it is the click does.
+				switch ( encoder_modes[ encoder_mode_count ].clicked_key[ current_layer ] ){
+					case ALTTABC:
+						if (is_alt_tab_active) {
+							if (!is_lalt_pressed) unregister_code(KC_LALT);
+							is_alt_tab_active = false;
+						}
+						break;
+					case ENCMUP:
+						cycle_encoder_mode(true);
+						break;
+					case ENCMDN:
+						cycle_encoder_mode(false);
+						break;
+					default:
+						register_code( encoder_modes[ encoder_mode_count ].clicked_key[ current_layer ]  );
+						held_keycode_timer = timer_read32();
+						while (timer_elapsed32(held_keycode_timer) < MEDIA_KEY_DELAY);
+						unregister_code( encoder_modes[ encoder_mode_count ].clicked_key[ current_layer ] );
+					break;
+				}
+			} else { // If the encoder click was held for more time than the delay:
+				if (!automatic_encoder_mode_cycle) {
+					if (is_shift_held) cycle_encoder_mode(false);
+					else cycle_encoder_mode(true);
+				}
+			}
+	//		held_click_timer = 0;
+			automatic_encoder_mode_cycle = false;
+		#endif					
+	}
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 	if (!is_keyboard_locked){
 		switch (keycode) {
-			case TD_FND:
-				if (record->event.pressed) {
-					fnd_held_timer = timer_read32();
-					is_fnd_held = true;
-				} else {
-					if (timer_elapsed32(fnd_held_timer) < FND_DELAY) layer_invert(1);
-					else layer_off(2);
-					// Little delay to avoid fast turning on and off the tapping
-					held_keycode_timer = timer_read32();
-					while (timer_elapsed32(held_keycode_timer) < MEDIA_KEY_DELAY);
-					fnd_held_timer = 0;
-					is_fnd_held = false;
-				}
-				return true;
+			case TD_FND: 
+				handle_tdfnd(record->event.pressed);
+				return false;
 			case KC_LSFT:
 			case KC_RSFT:
 				if (record->event.pressed) is_shift_held = true;
 				else is_shift_held = false;
 				return true;
 			case ENCODER_CLICK:
-				if (record->event.pressed) { // What to do when the encoder is pressed
-					is_click_held = true;
-					#if ENCODER_DELAYED_MODE
-						held_click_timer = timer_read32(); // If the encoder delayed mode change is on, triggers a timer
-					#else
-						if (is_shift_held) cycle_encoder_mode(false); // If the encoder delayed mode is not on, just cycle mode
-						else cycle_encoder_mode(true);
-					#endif
-				} else { // What to do when encoder is released
-					is_click_held = false;
-
-					// if the encoder delayed mode change is on, that is, ENCODER_DELAYED_MODE is defined and equals TRUE, then scans for the time the click was pressed and does what it has to do  -- sample the timer which was triggered on press and use the sampled time to either send out the click key or change mode in case the click is held for more than ENCODER_MODE_CHANGE_DELAY
-					#if ENCODER_DELAYED_MODE
-						if (timer_elapsed32(held_click_timer) < encoder_click_delay && !automatic_encoder_mode_cycle ){ // Checking if the time the encoder click was held was smaller than the delay defined and if an automatic mode change was not already performed. If it was, just register whatever it is the click does.
-							switch ( encoder_modes[ encoder_mode_count ].clicked_key[ current_layer ] ){
-								case ALTTABC:
-									if (is_alt_tab_active) {
-										if (!is_lalt_pressed) unregister_code(KC_LALT);
-										is_alt_tab_active = false;
-									}
-									break;
-								case ENCMUP:
-									cycle_encoder_mode(true);
-									break;
-								case ENCMDN:
-									cycle_encoder_mode(false);
-									break;
-								default:
-									register_code( encoder_modes[ encoder_mode_count ].clicked_key[ current_layer ]  );
-									held_keycode_timer = timer_read32();
-									while (timer_elapsed32(held_keycode_timer) < MEDIA_KEY_DELAY);
-									unregister_code( encoder_modes[ encoder_mode_count ].clicked_key[ current_layer ] );
-								break;
-							}
-						} else { // If the encoder click was held for more time than the delay:
-							if (!automatic_encoder_mode_cycle) {
-								if (is_shift_held) cycle_encoder_mode(false);
-								else cycle_encoder_mode(true);
-							}
-						};
-				//		held_click_timer = 0;
-						automatic_encoder_mode_cycle = false;
-					#endif					
-				};
-				return false; // Skip all further processing of this key
+				handle_encoder_click(record->event.pressed);
+				return false;
 			case KC_LALT: // If this is not defined, if the encoder is activated in the alt-tab mode while the LALT key is pressed, the menu goes away.
 				if (record->event.pressed) is_lalt_pressed = true;
 				else is_lalt_pressed = false;				
@@ -362,9 +372,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 				return false;
 			default:
 				return true; // Process all other keycodes normally
-		};
+		}
 	} else {
 		switch (keycode){
+			case TD_FND: 
+				handle_tdfnd(record->event.pressed);
+				return false;
 			case TGLCK:
 				if (!record->event.pressed) unlock_keyboard();
 				return false;
@@ -377,26 +390,27 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 // Setting up caps lock and num lock indicators
 bool led_update_kb(led_t led_state) {
 	bool res = led_update_user(led_state);
-	if (!is_keyboard_locked){
-		if(res) {
-			writePin(TOP_INDICATOR_PIN, !led_state.num_lock);
-			writePin(MID_INDICATOR_PIN, !led_state.caps_lock);
-		}
+	if(res && !is_keyboard_locked) {
+		writePin(TOP_INDICATOR_PIN, !led_state.num_lock);
+		writePin(MID_INDICATOR_PIN, !led_state.caps_lock);
 	}
 	return res;
 }
 
 layer_state_t layer_state_set_user(layer_state_t state) {
 	current_layer = get_highest_layer(state);
-	switch (current_layer) {
-		case 1:
-			writePin(BOT_INDICATOR_PIN, 0);
-			break;
-		default: //  for any other layers, or the default layer
-			writePin(BOT_INDICATOR_PIN, 1);
-			break;
+	if (!is_keyboard_locked){
+		switch (current_layer) {
+			case 2:
+				writePin(BOT_INDICATOR_PIN, 0);
+				break;
+			default: //  for any other layers, or the default layer
+				writePin(BOT_INDICATOR_PIN, 1);
+				break;
+		}
+		return state;
 	}
-	return state;
+	else return state;
 }
 
 void housekeeping_task_user(void) { // The very important timer.
