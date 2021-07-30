@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MATRIX_COLS 15
 
 #define MATRIX_COL_PINS { B10, B12, C8 , C5 , B0 , B1 , C10, B13, B14, B15, A15, C6 , C7 , C9 , A8 }
-#define MATRIX_ROW_PINS { C4 , A10, D2 , C12, C13 , C11 }
+#define MATRIX_ROW_PINS { C4 , A10, D2 , C12, A7 , C11 }
 #define DIODE_DIRECTION COL2ROW
 
 /* define if matrix has ghost */
@@ -43,7 +43,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* Locking resynchronize hack */
 #define LOCKING_RESYNC_ENABLE
 
-#define EEPROM_I2C_24LC128
+#define EEPROM_I2C_24LC256
 //#define I2C1_CLOCK_SPEED 400000
 //#define I2C1_DUTY_CYCLE FAST_DUTY_CYCLE_2
 
@@ -51,8 +51,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define STM32_HSECLK 8000000
 
-#define OPENDRAIN_INDICATORS
-#define LED_CAPS_LOCK_PIN C8
+
 
 /*
  * Feature disable options
