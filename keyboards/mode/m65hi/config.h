@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* USB Device descriptor parameter */
 #define VENDOR_ID       0x00DE
-#define PRODUCT_ID      0x6573 // For 65A
+#define PRODUCT_ID      0x6573 // For 65I
 #define DEVICE_VER      0x0001
 #define MANUFACTURER    Mode
 #define PRODUCT         SixtyFive HI
@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MATRIX_COLS 15
 
 #define MATRIX_COL_PINS { B10, B12, C8 , C5 , B0 , B1 , C10, B13, B14, B15, A15, C6 , C7 , C9 , A8 }
-#define MATRIX_ROW_PINS { C4 , A10, D2 , C12, A1 , C11 }
+#define MATRIX_ROW_PINS { C4 , A10, D2 , C12, A7 , C11 }
 #define DIODE_DIRECTION COL2ROW
 
 /* define if matrix has ghost */
@@ -52,7 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define STM32_HSECLK 8000000
 
 #define OPENDRAIN_INDICATORS
-#define LED_CAPS_LOCK_PIN C8
+#define LED_CAPS_LOCK_PIN A6
 
 /*
  * Feature disable options

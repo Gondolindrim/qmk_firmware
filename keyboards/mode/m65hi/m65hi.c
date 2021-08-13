@@ -34,7 +34,6 @@ void led_init_ports(void) {
 #    define INDICATOR_PIN_MODE PAL_MODE_OUTPUT_PUSHPULL
 #else
 #    define INDICATOR_PIN_MODE PAL_MODE_OUTPUT_OPENDRAIN
-
 #endif
 
 #ifdef LED_NUM_LOCK_PIN
