@@ -19,8 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* USB Device descriptor parameter */
 #define VENDOR_ID       0x00DE
-#define PRODUCT_ID      0x6573 // For 65I
-#define DEVICE_VER      0x0001
+#define PRODUCT_ID      0x6574 // For 65I + 1 (for alpha, since pre-alpha 6573)
+#define DEVICE_VER      0x0065 // A for A (alpha)
 #define MANUFACTURER    Mode
 #define PRODUCT         SixtyFive HI
 
@@ -28,8 +28,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MATRIX_ROWS 6
 #define MATRIX_COLS 15
 
-#define MATRIX_COL_PINS { B10, B12, C8 , C5 , B0 , B1 , C10, B13, B14, B15, A15, C6 , C7 , C9 , A8 }
-#define MATRIX_ROW_PINS { C4 , A10, D2 , C12, A7 , C11 }
+#define MATRIX_COL_PINS { B10, B12, C8 , C4 , C5 , B0 , C10, B13, B14, B15, A15, C6 , C7 , A8 , C9 }
+#define MATRIX_ROW_PINS { A7 , A10, D2 , C12, B1 , C11 }
 #define DIODE_DIRECTION COL2ROW
 
 /* define if matrix has ghost */

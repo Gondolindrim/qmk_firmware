@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* USB Device descriptor parameter */
 #define VENDOR_ID       0x00DE
 #define PRODUCT_ID      0x6565 // For 65A
-#define DEVICE_VER      0x0001
+#define DEVICE_VER      0x8065 // PA for pre-Alpha
 #define MANUFACTURER    Mode
 #define PRODUCT         SixtyFive HA
 
