@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 /* USB Device descriptor parameter */
-#define VENDOR_ID       0x00DE
+#define VENDOR_ID       0x7675 // LK for Loki
 #define PRODUCT_ID      0x6583 // For 65S
 #define DEVICE_VER      0x0001
 #define MANUFACTURER    Loki65
@@ -53,6 +53,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define OPENDRAIN_INDICATORS
 #define LED_CAPS_LOCK_PIN A2
+
+#define RGB_DI_PIN B15
+#define RGBLED_NUM 16
+#define RGBLIGHT_LIMIT_VAL 150
+#define RGBLIGHT_ANIMATIONS
+
+#define WS2812_PWM_COMPLEMENTARY_OUTPUT
+#define WS2812_PWM_DRIVER PWMD1
+#define WS2812_PWM_CHANNEL 3
+#define WS2812_PWM_PAL_MODE 1
+#define WS2812_DMA_STREAM STM32_DMA2_STREAM5
+#define WS2812_DMA_CHANNEL 6
+
 
 /*
  * Feature disable options
