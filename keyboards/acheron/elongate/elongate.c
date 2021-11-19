@@ -15,12 +15,59 @@
  */
 
 #include "elongate.h"
+
+#define LED_PIN_ON_STATE 1
+// Inits all indicator LEDs as open-drain
+void led_init_ports(void) {
+    palSetLineMode(LED1_PIN, PAL_MODE_OUTPUT_OPENDRAIN);
+    palSetLineMode(LED2_PIN, PAL_MODE_OUTPUT_OPENDRAIN);
+    palSetLineMode(LED3_PIN, PAL_MODE_OUTPUT_OPENDRAIN);
+    palSetLineMode(LED4_PIN, PAL_MODE_OUTPUT_OPENDRAIN);
+    palSetLineMode(LED5_PIN, PAL_MODE_OUTPUT_OPENDRAIN);
+    palSetLineMode(LED6_PIN, PAL_MODE_OUTPUT_OPENDRAIN);
+}
+
+// This function updates LEDs 1, 2 and 3 according to num, caps and scroll lock states
 bool led_update_kb(led_t led_state) {
     bool res = led_update_user(led_state);
     if(res) {
-        writePin(D2, led_state.num_lock);
-        writePin(D1, led_state.caps_lock);
-        writePin(D0, led_state.scroll_lock);
+        writePin(LED1_PIN, !led_state.num_lock);
+        writePin(LED2_PIN, !led_state.caps_lock);
+        writePin(LED3_PIN, !led_state.scroll_lock);
     }
     return res;
+}
+
+// Turns off all bottom LEDs
+void turn_off_bottom_leds(void){
+	writePin(LED3_PIN, 1);
+	writePin(LED4_PIN, 1);
+	writePin(LED5_PIN, 1);
+}
+
+/*
+Here the bottom LEDs get updated. The idea being that LED4 is lit when the default layer is active, LED5 when layer 1 is active and LED6 when layer 2.
+Before updating, however, all bottom LEDs are turned off.
+*/
+layer_state_t layer_state_set_kb(layer_state_t state) {
+    turn_off_bottom_leds();
+    switch (get_highest_layer(state)) {
+//   case 0:
+// The base layer, or layer zero, will be handled by the default case.
+    case 1:
+	writePin(LED5_PIN, 0);
+        break;
+    case 2:
+	writePin(LED6_PIN, 0);
+        break;
+    default:
+	writePin(LED4_PIN, 0);
+        break;
+    }
+  return state;
+}
+
+// Since the keyboard starts at layer 0, the init function starts LED4 as lit up.
+void keyboard_post_init_kb(void){
+	writePin(LED4_PIN, 0);
 }

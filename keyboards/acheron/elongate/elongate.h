@@ -18,6 +18,9 @@
 
 #include "quantum.h"
 
+#define KNO KC_NO
+#define LAYOUT_default LAYOUT_all
+
 /* This is a shortcut to help you visually see your layout.
  *
  * The first section contains all of the arguments representing the physical
@@ -27,18 +30,15 @@
  * represents the switch matrix.
  */
 
-#define KNO KC_NO
-
-#define LAYOUT( \
-    K00, K01, K02, K03, K04, K05, K06, K07, K08, K09, K0A, K0B, K0C, K49, K41, \
-    K10, K11, K12, K13, K14, K15, K16, K17, K18, K19,      K1B, K1C, K4A, K42, \
-    K20,      K22, K23, K24, K25, K26, K27, K28, K29, K2A, K2B, K2C, K4B, K44, \
-    K30, K31, K32,      K34,           K37,      K3A, K3B, K3C, K3D, K4C, K47  \
-)\
-{\
-    { K00, K01, K02, K03, K04, K05, K06, K07, K08, K09, K0A, K0B, K0C }, \
-    { K10, K11, K12, K13, K14, K15, K16, K17, K18, K19, KNO, K1B, K1C }, \
-    { K20, KNO, K22, K23, K24, K25, K26, K27, K28, K29, K2A, K2B, K2C }, \
-    { K30, K31, K32, KNO, K34, KNO, KNO, K37, KNO, K3A, K3B, K3C, K3D }, \
-    { KNO, K41, K42, KNO, K44, KNO, KNO, K47, KNO, K49, K4A, K4B, K4C }  \
+#define LAYOUT_all( \
+    K00, K01, K02, K03, K04, K05, K06, K07, K08, K09, K0A, K0B, K0C, K0D, K0E, \
+    K10, K11, K12, K13, K14, K15, K16, K17, K18, K19,      K1B, K1C, K1D, K1E, \
+    K20,      K22, K23, K24, K25, K26, K27, K28, K29, K2A, K4B, K4C, K4D, K4E, \
+    K30, K31, K32,      K34,           K37,      K39, K3A, K3B, K3C, K3D, K3E  \
+) { \
+    { K00, K01, K02, K03, K04, K05, K06, K07, K08, K09, K0A, K0B, K0C, K0D, K0E }, \
+    { K10, K11, K12, K13, K14, K15, K16, K17, K18, K19, KNO, K1B, K1C, K1D, K1E }, \
+    { K20, KNO, K22, K23, K24, K25, K26, K27, K28, K29, K2A, KNO, KNO, KNO, KNO }, \
+    { K30, K31, K32, KNO, K34, KNO, KNO, K37, KNO, K39, K3A, K3B, K3C, K3D, K3E }, \
+    { KNO, KNO, KNO, KNO, KNO, KNO, KNO, KNO, KNO, KNO, KNO, K4B, K4C, K4D, K4E } \
 }
