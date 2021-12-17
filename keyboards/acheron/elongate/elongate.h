@@ -1,4 +1,4 @@
-/* Copyright 2020 Gondolindrim
+/* Copyright 2021 Gondolindrim
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,17 +18,7 @@
 
 #include "quantum.h"
 
-#define KNO KC_NO
-#define LAYOUT_default LAYOUT_all
-
-/* This is a shortcut to help you visually see your layout.
- *
- * The first section contains all of the arguments representing the physical
- * layout of the board and position of the Keys.
- *
- * The second converts the arguments into a two-dimensional array which
- * represents the switch matrix.
- */
+#define ___ KC_NO
 
 #define LAYOUT_all( \
     K00, K01, K02, K03, K04, K05, K06, K07, K08, K09, K0A, K0B, K0C, K0D, K0E, \
@@ -37,8 +27,8 @@
     K30, K31, K32,      K34,           K37,      K39, K3A, K3B, K3C, K3D, K3E  \
 ) { \
     { K00, K01, K02, K03, K04, K05, K06, K07, K08, K09, K0A, K0B, K0C, K0D, K0E }, \
-    { K10, K11, K12, K13, K14, K15, K16, K17, K18, K19, KNO, K1B, K1C, K1D, K1E }, \
-    { K20, KNO, K22, K23, K24, K25, K26, K27, K28, K29, K2A, KNO, KNO, KNO, KNO }, \
-    { K30, K31, K32, KNO, K34, KNO, KNO, K37, KNO, K39, K3A, K3B, K3C, K3D, K3E }, \
-    { KNO, KNO, KNO, KNO, KNO, KNO, KNO, KNO, KNO, KNO, KNO, K4B, K4C, K4D, K4E } \
+    { K10, K11, K12, K13, K14, K15, K16, K17, K18, K19, ___, K1B, K1C, K1D, K1E }, \
+    { K20, ___, K22, K23, K24, K25, K26, K27, K28, K29, K2A, ___, ___, ___, ___ }, \
+    { K30, K31, K32, ___, K34, ___, ___, K37, ___, K39, K3A, K3B, K3C, K3D, K3E }, \
+    { ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, ___, K4B, K4C, K4D, K4E } \
 }

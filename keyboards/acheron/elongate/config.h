@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* USB Device descriptor parameter */
 #define VENDOR_ID 0x4150 //AP for AcheronProject
-#define PRODUCT_ID 0x454C // EL for Elongate
+#define PRODUCT_ID 0x454D // EL+1 for Elongate revision Delta
 #define DEVICE_VER 0x0002
 #define MANUFACTURER Acheron Project
 #define PRODUCT Elongate
@@ -39,7 +39,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define BACKLIGHT_PWM_CHANNEL 1
 #define BACKLIGHT_PAL_MODE 1
 #define BACKLIGHT_BREATHING
-#define BACKLIGHT_LEVELS 3
+#define BACKLIGHT_LEVELS 20
+#define BREATHING_PERIOD 3
 
 #define RGB_DI_PIN B15
 #define RGBLED_NUM 16

@@ -1,4 +1,4 @@
-/* Copyright 2020 Gondolindrim
+/* Copyright 2021 Gondolindrim
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,14 +17,14 @@
 #include "elongate.h"
 
 #define LED_PIN_ON_STATE 1
-// Inits all indicator LEDs as open-drain
+// Inits all indicator LEDs as push-pull outputs
 void led_init_ports(void) {
-    palSetLineMode(LED1_PIN, PAL_MODE_OUTPUT_OPENDRAIN);
-    palSetLineMode(LED2_PIN, PAL_MODE_OUTPUT_OPENDRAIN);
-    palSetLineMode(LED3_PIN, PAL_MODE_OUTPUT_OPENDRAIN);
-    palSetLineMode(LED4_PIN, PAL_MODE_OUTPUT_OPENDRAIN);
-    palSetLineMode(LED5_PIN, PAL_MODE_OUTPUT_OPENDRAIN);
-    palSetLineMode(LED6_PIN, PAL_MODE_OUTPUT_OPENDRAIN);
+    palSetLineMode(LED1_PIN, PAL_MODE_OUTPUT_PUSHPULL);
+    palSetLineMode(LED2_PIN, PAL_MODE_OUTPUT_PUSHPULL);
+    palSetLineMode(LED3_PIN, PAL_MODE_OUTPUT_PUSHPULL);
+    palSetLineMode(LED4_PIN, PAL_MODE_OUTPUT_PUSHPULL);
+    palSetLineMode(LED5_PIN, PAL_MODE_OUTPUT_PUSHPULL);
+    palSetLineMode(LED6_PIN, PAL_MODE_OUTPUT_PUSHPULL);
 }
 
 // This function updates LEDs 1, 2 and 3 according to num, caps and scroll lock states
@@ -52,16 +52,21 @@ Before updating, however, all bottom LEDs are turned off.
 layer_state_t layer_state_set_kb(layer_state_t state) {
     turn_off_bottom_leds();
     switch (get_highest_layer(state)) {
-//   case 0:
 // The base layer, or layer zero, will be handled by the default case.
     case 1:
+	writePin(LED4_PIN, 1);
 	writePin(LED5_PIN, 0);
+	writePin(LED6_PIN, 1);
         break;
     case 2:
+	writePin(LED4_PIN, 1);
+	writePin(LED5_PIN, 1);
 	writePin(LED6_PIN, 0);
         break;
     default:
 	writePin(LED4_PIN, 0);
+	writePin(LED5_PIN, 1);
+	writePin(LED6_PIN, 1);
         break;
     }
   return state;
