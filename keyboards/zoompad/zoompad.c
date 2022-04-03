@@ -20,6 +20,19 @@ void board_init(void) {
 	setPinInput(B7);
 }
 
+uint16_t indicator_color[3] = { 0xFF, 0xFF, 0xFF } ;
+
+bool led_update_kb(led_t led_state) {
+//    if (led_state.num_lock) current_color = indicator_color ;
+//    else current_color = {0x00,0x00,0x00};
+    if (led_state.num_lock){
+        for (int i = 0 ; i < 3 ; i++) rgblight_setrgb_at( indicator_color[0] , indicator_color[1] , indicator_color[2] , 0);
+    } else {
+        for (int i = 0 ; i < 3 ; i++) rgblight_setrgb_at( 0x00 , 0x00 , 0x00 , 0);
+    }
+    return true;
+}
+
 #ifdef ENCODER_ENABLE
 bool encoder_update_kb(uint8_t index, bool clockwise) {
     if(!encoder_update_user(index, clockwise)) return false;

@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MATRIX_ROWS 7
 #define MATRIX_COLS 8
 
-#define MATRIX_COL_PINS { B14, A10, C2 , B4 , B5 , A0 , C15, C13 }
+#define MATRIX_COL_PINS { B14, A10, A15, B4 , B0 , A0 , C15, C13 }
 #define MATRIX_ROW_PINS { B3 , A8 , C14, B9 , B1 , B10, B12 }
 #define DIODE_DIRECTION COL2ROW
 
