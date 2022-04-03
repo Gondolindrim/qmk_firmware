@@ -20,7 +20,7 @@
 void board_init(void) {
 	setPinInput(B6);
  	setPinInput(B7);
-	rgblight_set_effect_range(0,23);
+	rgblight_set_effect_range(0,24);
 }
 
 bool led_update_kb(led_t led_state) {
