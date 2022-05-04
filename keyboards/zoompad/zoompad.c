@@ -15,23 +15,29 @@
  */
 
 #include "zoompad.h"
+
+uint16_t indicator_color[3] = { 0x00, 0x00, 0x33 } ;
+
 void board_init(void) {
 	setPinInput(B6);
 	setPinInput(B7);
+#ifndef ENCODER_MODES
+        led_t led_state = host_keyboard_led_state();
+	led_update_kb(led_state);
+#endif
 }
 
-uint16_t indicator_color[3] = { 0xFF, 0xFF, 0xFF } ;
-
+#ifndef ENCODER_MODES
 bool led_update_kb(led_t led_state) {
 //    if (led_state.num_lock) current_color = indicator_color ;
 //    else current_color = {0x00,0x00,0x00};
-    if (led_state.num_lock){
-        for (int i = 0 ; i < 3 ; i++) rgblight_setrgb_at( indicator_color[0] , indicator_color[1] , indicator_color[2] , 0);
-    } else {
-        for (int i = 0 ; i < 3 ; i++) rgblight_setrgb_at( 0x00 , 0x00 , 0x00 , 0);
+    bool res = led_update_user(led_state);
+    if (res) {
+        led_state.num_lock ? rgblight_sethsv_at( indicator_color[0] , indicator_color[1] , indicator_color[2] , 0) : rgblight_sethsv_at( 0x00 , 0x00 , 0x00 , 0);
     }
-    return true;
+    return res;
 }
+#endif
 
 #ifdef ENCODER_ENABLE
 bool encoder_update_kb(uint8_t index, bool clockwise) {

@@ -42,6 +42,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define RGB_DI_PIN B15
 #define RGBLED_NUM 1
+#define RGBLIGHT_DEFAULT_VAL 0
 
 #define WS2812_PWM_COMPLEMENTARY_OUTPUT
 #define WS2812_PWM_DRIVER PWMD1
@@ -50,5 +51,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define WS2812_DMA_STREAM STM32_DMA2_STREAM5
 #define WS2812_DMA_CHANNEL 6
 
-#define ENCODERS_PAD_A { B8 }
-#define ENCODERS_PAD_B { B5 }
+#define ENCODERS_PAD_A { B5 }
+#define ENCODERS_PAD_B { B8 }
+#define ENCODER_RESOLUTION 2
+#define ENCODER_MODES
+
+#define EEPROM_I2C_24LC64

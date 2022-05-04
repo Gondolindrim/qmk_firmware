@@ -17,6 +17,7 @@ SLEEP_LED_ENABLE = no       # Breathing sleep LED during USB suspend
 NKRO_ENABLE = yes            # USB Nkey Rollover
 RGBLIGHT_ENABLE = yes        # Enable keyboard RGB underglow
 WS2812_DRIVER = pwm
+EEPROM_DRIVER = i2c
 AUDIO_ENABLE = no           # Audio output
 LTO_ENABLE = yes
 ENCODER_ENABLE = no
