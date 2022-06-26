@@ -1,4 +1,4 @@
- /* Copyright 2020-2022 Gondolindrim
+/* Copyright 2022 Álvaro "Gondolindrim" Volpato
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,13 +13,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
- #pragma once
 
-#include "quantum.h"
+#pragma once
 
-#if defined(KEYBOARD_noxary_378_alpha)
-#include "alpha.h"
-#elif defined(KEYBOARD_noxary_378_beta)
-#include "beta.h"
-#endif
+#include_next <mcuconf.h>
+#undef STM32_PLLM_VALUE
+#undef STM32_PLLN_VALUE
+#undef STM32_PLLP_VALUE
+#undef STM32_PLLQ_VALUE
+#undef STM32_PPRE1
+#undef STM32_PPRE2
+
+#define STM32_PLLM_VALUE                    4
+#define STM32_PLLN_VALUE                    96
+#define STM32_PLLP_VALUE                    2
+#define STM32_PLLQ_VALUE                    4
+#define STM32_PPRE1                         STM32_PPRE1_DIV2
+#define STM32_PPRE2                         STM32_PPRE2_DIV1
+
+#undef STM32_I2C_USE_I2C1
+#define STM32_I2C_USE_I2C1 TRUE

@@ -1,4 +1,6 @@
- /* Copyright 2020-2022 Gondolindrim
+
+
+/* Copyright 2022 Alvaro "Gondolindrim" Volpato
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,13 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
- #pragma once
 
-#include "quantum.h"
+#pragma once
 
-#if defined(KEYBOARD_noxary_378_alpha)
-#include "alpha.h"
-#elif defined(KEYBOARD_noxary_378_beta)
-#include "beta.h"
-#endif
+#define HAL_USE_I2C TRUE
+
+#include_next <halconf.h>
