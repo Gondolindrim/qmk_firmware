@@ -49,7 +49,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define I2C_SDA_PIN B7
 #define I2C_SCL_PAL_MODE 4
 #define I2C_SDA_PAL_MODE 4
-#define EEPROM_I2C_24LC256
+#define EEPROM_I2C_24LC128
 #define I2C1_CLOCK_SPEED 400000
 #define I2C1_DUTY_CYCLE FAST_DUTY_CYCLE_2
 
