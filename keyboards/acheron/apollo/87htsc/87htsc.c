@@ -17,11 +17,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "87htsc.h"
 
-void board_init(void) {
-    setPinInput(B9);
-    setPinInput(B10);
-}
-
 led_config_t g_led_config = { {
 	{ 15       , 14         , 13         , 12         , 11         , 10         , 9          , 8          , 7          , 6          , 5          , 4          , 3          , NO_LED     , 2          , 1          , 0         },
 	{ 16       , 17         , 18         , 19         , 20         , 21         , 22         , 23         , 24         , 25         , 26         , 27         , 28         , 29         , 30         , 31         , 32        },
