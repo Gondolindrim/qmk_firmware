@@ -21,7 +21,7 @@ void board_init(void) {
     setPinInput(B6);
     setPinInput(B7);
 #if defined (LINE_RGBS)
-    rgblight_set_effect_range(0,16);
+    rgblight_set_effect_range(0,15);
 #elif defined (RUNE_RGBS)
     rgblight_set_effect_range(0,5);
 #elif defined (LUKE_RGBS)
