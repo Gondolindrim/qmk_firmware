@@ -30,6 +30,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MATRIX_ROW_PINS { A10, A15, C13, A7 , B0 }
 #define DIODE_DIRECTION COL2ROW
 
+#define RGB_DI_PIN B15
+#define RGBLED_NUM 1
+
 /* Set 0 if debouncing isn't needed */
 #define DEBOUNCE    5
 

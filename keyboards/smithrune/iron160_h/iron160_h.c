@@ -16,3 +16,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "iron160_h.h"
+
+// Defining indicator colors
+uint8_t caps_color[3] = {0xFF,0xFF,0xFF};
+
+bool led_update_kb(led_t led_state) {
+    bool res = led_update_user(led_state);
+    if(res) {
+        led_state.caps_lock ? rgblight_setrgb_at(caps_color[0], caps_color[1], caps_color[2], 0) : rgblight_setrgb_at(0x00,0x00,0x00,0);
+    }
+    return res;
+}
