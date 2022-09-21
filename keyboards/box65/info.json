@@ -1,0 +1,11 @@
+{
+	"keyboard_name": "BOX65",
+	"manufacturer": "LinDesign",
+	"url": "",
+	"maintainer": "Gondolindrim",
+	"usb":	{
+		"vid": "0x7668",
+		"pid": "0xB065",
+		"device_version": "0.0.1"
+		},    
+}
