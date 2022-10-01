@@ -52,4 +52,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define STM32_HSECLK 8000000
 
-#define EEPROM_I2C_24LC256
+// Adjusting the wear-levelled EEPROM is needed because the default 1024 is not enough for 4 dynamic layers
+#define WEAR_LEVELING_LOGICAL_SIZE 2048
+#define WEAR_LEVELING_BACKING_SIZE 4096
