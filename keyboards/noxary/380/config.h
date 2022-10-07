@@ -30,7 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MATRIX_COLS 18
 
 //                        C0 , C1 , C2 , C3 , C4 , C5 , C6 , C7 , C8 , C9 , C10, C11, C12, C13, C14, C15, C16, C17                   
-#define MATRIX_COL_PINS { B10, B0 , A7 , A6 , A5 , A4 , A3 , A2 , A1 , A8 , B15, C14, B14, B13, A10, A15, B4 , B5 }
+#define MATRIX_COL_PINS { B10, B0 , A7 , A6 , A5 , A4 , A3 , A2 , A0 , A8 , B15, C14, B14, B13, A10, A15, B4 , B5 }
 //                        R0 , R1 , R2 , R3 , R4 , R5 , R6
 #define MATRIX_ROW_PINS { B9 , B8 , B12, A1 , C15, C13, B3 }
 #define DIODE_DIRECTION COL2ROW

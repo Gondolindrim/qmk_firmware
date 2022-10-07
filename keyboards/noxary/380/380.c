@@ -15,7 +15,3 @@
  */
 
 #include "380.h"
-void board_init(void) {
-	setPinInput(B6);
-	setPinInput(B7);
-}
