@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "iron160_h.h"
 
 // Defining indicator colors
-uint8_t caps_color[3] = {0xFF,0xFF,0xFF};
+uint8_t caps_color[3] = {0x33,0x33,0x33};
 
 bool led_update_kb(led_t led_state) {
     bool res = led_update_user(led_state);
