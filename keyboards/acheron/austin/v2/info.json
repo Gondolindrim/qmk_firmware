@@ -1,0 +1,11 @@
+{
+    "keyboard_name": "Austin V2",
+    "manufacturer": "DriftMechanics",
+    "url": "",
+    "maintainer": "Gondolindrim",
+    "usb": {
+        "vid": "0x4150",
+        "pid": "0x8777",
+        "device_version": "0.0.1"
+    }
+}
