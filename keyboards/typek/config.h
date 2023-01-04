@@ -43,8 +43,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define RGB_DI_PIN B15
 #define RGBLED_NUM 67
-#define RGBLIGHT_ANIMATIONS
-#define RGBLIGHT_DEFAULT_VAL 50
 #define RGBLIGHT_SLEEP
 
 #define RGBLIGHT_EFFECT_BREATHING
