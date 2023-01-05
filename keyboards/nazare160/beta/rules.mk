@@ -1,4 +1,5 @@
-MCU = STM32F411
+MCU = STM32F401
+BOARD = GENERIC_STM32_F411XE
 
 # Bootloader selection
 BOOTLOADER = stm32-dfu
@@ -22,7 +23,8 @@ WS2812_DRIVER = pwm
 AUDIO_ENABLE = no           # Audio output
 LTO_ENABLE = no
 
-EEPROM_DRIVER = i2c
+EEPROM_DRIVER = wear_leveling
+WEAR_LEVELING_DRIVER = legacy
 
 ENCODER_ENABLE = no
 # Enter lower-power sleep mode when on the ChibiOS idle thread

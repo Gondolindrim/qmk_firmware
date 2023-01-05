@@ -18,11 +18,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 /* USB Device descriptor parameter */
-#define VENDOR_ID       0x7865 // NA for Nazare
-#define PRODUCT_ID      0x0061 // 60 + 1 for revision beta, alpha was 60
-#define DEVICE_VER      0x0001
-#define MANUFACTURER    Nazaré Engineering
-#define PRODUCT         Nazaré1-60
+//#define VENDOR_ID       0x7865 // NA for Nazare
+//#define PRODUCT_ID      0x0061 // 60 + 1 for revision beta, alpha was 60
+//#define DEVICE_VER      0x0001
+//#define MANUFACTURER    Nazare//Engineering
+//#define PRODUCT         Nazaré1-60
 
 /* key matrix size */
 #define MATRIX_ROWS 5
@@ -74,6 +74,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // Defining the backlight as caps lock backlight (there is only one LED present on the PCB)
 #define BACKLIGHT_CAPS_LOCK
 #define LED_PIN_ON_STATE 1
-
-// Defining the EEPROM
-#define EEPROM_I2C_24LC256
