@@ -17,6 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "delta.h"
 
+
+
 led_config_t g_led_config = { {
 //	{ 0        , 1          , 2          , 3          , 4          , 5          , 6          , 7          , 8          , 9          , 10         , 11         , 12         , NO_LED     , 13         , 14         , 15        },
 //	{ 16       , 17         , 18         , 19         , 20         , 21         , 22         , 23         , 24         , 25         , 26         , 27         , 28         , 29         , 30         , 31         , 32        },
@@ -56,13 +58,53 @@ led_config_t g_led_config = { {
 } };
 
 #define CAPS_INDICATOR_INDEX 49
+// PERSISTENT MEMORY (PMEM) CONFIGURATION ----------------------------------------------------------
+// Declaring a indicator_config_t type that stores color and enabled state
+typedef union {
+    uint32_t raw;
+    struct {
+        uint8_t h;
+        uint8_t s;
+        uint8_t v;
+        bool enabled;    
+    };
+} indicator_config_t;
 
-HSV caps_indicator_color  = {0   , 0   , 255 };
+// Declaring a new variable caps_indicator_config of the indicator_config_t type
+indicator_config_t caps_indicator_config;
+
+// Initializing persistent memory configuration: default values are declared and stored in PMEM
+void eeconfig_init_kb(void) {
+    // Default values
+    caps_indicator_config.raw = 0;
+    caps_indicator_config.h = 0;
+    caps_indicator_config.s = 0;
+    caps_indicator_config.v = 255;
+    caps_indicator_config.enabled = true;
+
+    // Write default value to EEPROM now
+    eeconfig_update_user(caps_indicator_config.raw);
+}
+
+// At the keyboard start, retrieves PMEM stored configs
+void keyboard_post_init_kb(void) {
+    caps_indicator_config.raw = eeconfig_read_user();
+    if (caps_indicator_config.enabled) {
+        rgb_matrix_indicators_kb();
+    }
+}
+
+
+// INDICATOR CALLBACK ------------------------------------------------------------------------------
 bool rgb_matrix_indicators_kb(void) {
-    if (!rgb_matrix_indicators_user()) {
+    // First decides if action is needed. If a user code is defined, or the indicator is disabled, then does not act.
+    if (!rgb_matrix_indicators_user() || !caps_indicator_config.enabled ) {
         return false;
     }
-    RGB rgb_caps_indicator_color = hsv_to_rgb(caps_indicator_color);
+
+    // The rgb_matrix_set_color function needs an RGB code to work, so first the indicator color is cast to an HSV value and then translated to RGB
+    HSV hsv_caps_indicator_color = {caps_indicator_config.h, caps_indicator_config.s, caps_indicator_config.v};
+    RGB rgb_caps_indicator_color = hsv_to_rgb(hsv_caps_indicator_color);
     if (host_keyboard_led_state().caps_lock) {
         rgb_matrix_set_color(CAPS_INDICATOR_INDEX, rgb_caps_indicator_color.r, rgb_caps_indicator_color.g, rgb_caps_indicator_color.b);
     } else {
@@ -71,9 +113,11 @@ bool rgb_matrix_indicators_kb(void) {
     return true;
 }
 
+// VIA CONFIGURATION -------------------------------------------------------------------------------
 enum via_indicator_color {
-    id_indicator_brightness = 1,
-    id_indicator_color = 2
+    id_indicator_enabled = 1,
+    id_indicator_brightness = 2,
+    id_indicator_color = 3
 };
 
 void indicator_config_set_value( uint8_t *data )
@@ -84,16 +128,55 @@ void indicator_config_set_value( uint8_t *data )
 
     switch ( *value_id )
     {
-        case id_indicator_brightness: // == 1
+        case id_indicator_enabled:
         {
-                caps_indicator_color.v = value_data[0];
+                caps_indicator_config.enabled = value_data[0];
+                break;
         }
-        case id_indicator_color: // == 2
+        case id_indicator_brightness:
         {
-                caps_indicator_color.h = value_data[0];
-                caps_indicator_color.s = value_data[1];
+                caps_indicator_config.v = value_data[0];
+                break;
+        }
+        case id_indicator_color:
+        {
+                caps_indicator_config.h = value_data[0];
+                caps_indicator_config.s = value_data[1];
+                break;
         }
     }
+}
+
+void indicator_config_get_value( uint8_t *data )
+{
+    // data = [ value_id, value_data ]
+    uint8_t *value_id   = &(data[0]);
+    uint8_t *value_data = &(data[1]);
+
+    switch ( *value_id )
+    {
+        case id_indicator_enabled:
+        {
+            value_data[0] = caps_indicator_config.enabled;
+            break;
+        }
+        case id_indicator_brightness:
+        {
+            value_data[0] = caps_indicator_config.v;
+            break;
+        }
+        case id_indicator_color:
+        {
+            value_data[0] = caps_indicator_config.h;
+            value_data[1] = caps_indicator_config.s;
+            break;
+        }
+    }
+}
+
+void indicator_config_save(void)
+{
+    eeconfig_update_user(caps_indicator_config.raw);
 }
 
 void via_custom_value_command_kb(uint8_t *data, uint8_t length) {
@@ -110,28 +193,25 @@ void via_custom_value_command_kb(uint8_t *data, uint8_t length) {
                 indicator_config_set_value(value_id_and_data);
                 break;
             }
-         //   case id_custom_get_value:
-         //   {
-         //       indicator_config_get_value(value_id_and_data);
-         //       break;
-         //   }
-         //   case id_custom_save:
-         //   {
-         //       indicator_config_save();
-         //       break;
-         //   }
-         //   default:
-         //   {
-         //       // Unhandled message.
-         //       *command_id = id_unhandled;
-         //       break;
-         //   }
+            case id_custom_get_value:
+            {
+                indicator_config_get_value(value_id_and_data);
+                break;
+            }
+            case id_custom_save:
+            {
+                indicator_config_save();
+                break;
+            }
+            default:
+            {
+                // Unhandled message.
+                *command_id = id_unhandled;
+                break;
+            }
         }
         return;
     }
 
-    // Return the unhandled state
     *command_id = id_unhandled;
-    
-    // DO NOT call raw_hid_send(data,length) here, let caller do this
 }
