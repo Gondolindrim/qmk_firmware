@@ -57,15 +57,81 @@ led_config_t g_led_config = { {
 
 #define CAPS_INDICATOR_INDEX 49
 
-RGB caps_indicator_color  = {255 , 255 , 255};
+HSV caps_indicator_color  = {0   , 0   , 255 };
 bool rgb_matrix_indicators_kb(void) {
     if (!rgb_matrix_indicators_user()) {
         return false;
     }
+    RGB rgb_caps_indicator_color = hsv_to_rgb(caps_indicator_color);
     if (host_keyboard_led_state().caps_lock) {
-        rgb_matrix_set_color(CAPS_INDICATOR_INDEX, caps_indicator_color.r, caps_indicator_color.g, caps_indicator_color.b);
+        rgb_matrix_set_color(CAPS_INDICATOR_INDEX, rgb_caps_indicator_color.r, rgb_caps_indicator_color.g, rgb_caps_indicator_color.b);
     } else {
         rgb_matrix_set_color(CAPS_INDICATOR_INDEX, 0, 0, 0);
     }
     return true;
+}
+
+enum via_indicator_color {
+    id_indicator_brightness = 1,
+    id_indicator_color = 2
+};
+
+void indicator_config_set_value( uint8_t *data )
+{
+    // data = [ value_id, value_data ]
+    uint8_t *value_id   = &(data[0]);
+    uint8_t *value_data = &(data[1]);
+
+    switch ( *value_id )
+    {
+        case id_indicator_brightness: // == 1
+        {
+                caps_indicator_color.v = value_data[0];
+        }
+        case id_indicator_color: // == 2
+        {
+                caps_indicator_color.h = value_data[0];
+                caps_indicator_color.s = value_data[1];
+        }
+    }
+}
+
+void via_custom_value_command_kb(uint8_t *data, uint8_t length) {
+    // data = [ command_id, channel_id, value_id, value_data ]
+    uint8_t *command_id        = &(data[0]);
+    uint8_t *channel_id        = &(data[1]);
+    uint8_t *value_id_and_data = &(data[2]);
+
+    if ( *channel_id == id_custom_channel ) {
+        switch ( *command_id )
+        {
+            case id_custom_set_value:
+            {
+                indicator_config_set_value(value_id_and_data);
+                break;
+            }
+         //   case id_custom_get_value:
+         //   {
+         //       indicator_config_get_value(value_id_and_data);
+         //       break;
+         //   }
+         //   case id_custom_save:
+         //   {
+         //       indicator_config_save();
+         //       break;
+         //   }
+         //   default:
+         //   {
+         //       // Unhandled message.
+         //       *command_id = id_unhandled;
+         //       break;
+         //   }
+        }
+        return;
+    }
+
+    // Return the unhandled state
+    *command_id = id_unhandled;
+    
+    // DO NOT call raw_hid_send(data,length) here, let caller do this
 }
