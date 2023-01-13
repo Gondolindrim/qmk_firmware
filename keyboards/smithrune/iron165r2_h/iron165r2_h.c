@@ -17,14 +17,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "iron165r2_h.h"
 
-void board_init(void) {
-    setPinInput(B6);
-    setPinInput(B7);
+void keyboard_post_init_kb(void) {
 #if defined (LINE_RGBS)
     rgblight_set_effect_range(0,15);
+    rgblight_setrgb_range(0,0,0,0,14);
 #elif defined (RUNE_RGBS)
     rgblight_set_effect_range(0,5);
+    rgblight_setrgb_range(0,0,0,0,4);
 #elif defined (LUKE_RGBS)
     rgblight_set_effect_range(0,2);
+    rgblight_setrgb_range(0,0,0,0,1);
 #endif
 }
