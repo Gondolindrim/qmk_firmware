@@ -20,12 +20,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 void keyboard_post_init_kb(void) {
 #if defined (LINE_RGBS)
     rgblight_set_effect_range(0,15);
-    rgblight_setrgb_range(0,0,0,16,20);
+    rgblight_setrgb_range(0,0,0,15,21);
 #elif defined (RUNE_RGBS)
     rgblight_set_effect_range(0,5);
-    rgblight_setrgb_range(0,0,0,6,20);
+    rgblight_setrgb_range(0,0,0,5,21);
 #elif defined (LUKE_RGBS)
     rgblight_set_effect_range(0,2);
-    rgblight_setrgb_range(0,0,0,3,20);
+    rgblight_setrgb_range(0,0,0,2,21);
 #endif
 }
