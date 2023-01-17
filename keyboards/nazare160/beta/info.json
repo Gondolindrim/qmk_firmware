@@ -1,0 +1,11 @@
+{
+    "manufacturer": "Nazarè Engineering",
+    "keyboard_name": "Nazarè 1-60",
+    "url": "",
+    "maintainer": "Gondolindrim",
+    "usb": {
+        "vid": "0x7865",
+        "pid": "0x0061",
+        "device_version": "0.1.0"
+    }
+}
