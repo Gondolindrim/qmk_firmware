@@ -17,8 +17,6 @@
 #include "iron165r2_s.h"
 
 void board_init(void) {
-    setPinInput(B6);
-    setPinInput(B7);
 #if defined (LINE_RGBS)
     rgblight_set_effect_range(0,16);
 #elif defined (RUNE_RGBS)
