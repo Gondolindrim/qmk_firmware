@@ -1,5 +1,5 @@
-/* Copyright 2020 QMK
- *
+/* 
+ * Copyright 2022 Gondolindrim <gondolindrim@acheronproject.com>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 2 of the License, or
@@ -21,6 +21,6 @@
 
 #pragma once
 
-#define HAL_USE_I2C TRUE
+#define HAL_USE_PWM TRUE
 
 #include_next <halconf.h>

@@ -1,0 +1,11 @@
+{
+    "keyboard_name": "X60 V2",
+    "manufacturer": "Noxary",
+    "url": "",
+    "maintainer": "Gondolindrim",
+    "usb": {
+        "vid": "0x4E58",
+        "pid": "0x0602",
+        "device_version": "0.0.1"
+    }
+}

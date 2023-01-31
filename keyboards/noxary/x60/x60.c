@@ -16,23 +16,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "x60.h"
-
-void board_init(void) {
-    setPinInput(B7);
-    setPinInput(B6);
-}
-
-// Configuring caps lock indicator pin
-
-#define LED_PIN_ON_STATE 1
-void led_init_ports(void) {
-    palSetLineMode(LED_CAPS_LOCK_PIN, PAL_MODE_OUTPUT_PUSHPULL);
-}
-
-bool led_update_kb(led_t led_state) {
-    bool res = led_update_user(led_state);
-    if(res) {
-       writePin(LED_CAPS_LOCK_PIN, !led_state.caps_lock);
-    }
-    return res;
-}

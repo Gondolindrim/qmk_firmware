@@ -1,5 +1,5 @@
 /*
- Copyright 2020 Álvaro "Gondolindrim" Volpato <alvaro.volpato@usp.br>
+ Copyright 2022 Gondolindrim <gondolindrim@acheronproject.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,13 +16,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #pragma once
-
-/* USB Device descriptor parameter */
-#define VENDOR_ID       0x4E58 // For "NX"
-#define PRODUCT_ID      0x0602 //
-#define DEVICE_VER      0x0001
-#define MANUFACTURER    Noxary
-#define PRODUCT         X60
 
 /* key matrix size */
 #define MATRIX_ROWS 6
@@ -43,13 +36,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* Locking resynchronize hack */
 #define LOCKING_RESYNC_ENABLE
 
-#define EEPROM_I2C_24LC128
-//#define I2C1_CLOCK_SPEED 400000
-//#define I2C1_DUTY_CYCLE FAST_DUTY_CYCLE_2
-
-#define EARLY_INIT_PERFORM_BOOTLOADER_JUMP TRUE
-
-#define STM32_HSECLK 8000000
-
-#define LED_CAPS_LOCK_PIN B1
-
+#define BACKLIGHT_PWM_DRIVER PWMD3
+#define BACKLIGHT_PWM_CHANNEL 4
+#define BACKLIGHT_PAL_MODE 2
+#define BACKLIGHT_PIN B1
+#define BACKLIGHT_LEVELS 5
+#define BACKLIGHT_CAPS_LOCK
