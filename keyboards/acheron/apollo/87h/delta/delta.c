@@ -1,5 +1,5 @@
 /*
- Copyright 2022 Álvaro "Gondolindrim" Volpato <alvaro.volpato@usp.br>
+ Copyright 2023 Gondolindrim <gondolindrim@acheronproject.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -16,7 +16,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "eeconfig.h"
-#include "print.h"
 #include "quantum.h"
 
 // PERSISTENT MEMORY (PMEM) CONFIGURATION ----------------------------------------------------------
@@ -222,39 +221,33 @@ void indicator_config_set_value( uint8_t *data )
     */
     indi_index = ( (int)(*value_id) - 1) / (int)INDICATOR_PROPERTY_NUMBER;
     data_index = (int)(*value_id) - indi_index*(int)INDICATOR_PROPERTY_NUMBER;
-    uprintf("\nConfig setting %d: ", data_index);
     indicator_config* current_indicator_p = get_indicator_p(indi_index);
     switch ( data_index )
     {
         case 1 :
         {
                 current_indicator_p -> enabled = value_data[0];
-                uprintf("Indicator %d enabled to: %d\n", indi_index, value_data[0]);
                 break;
         }
         case 2 :
         {
                 current_indicator_p -> v = value_data[0];
-                uprintf("Indicator %d brightness set to: %d\n", indi_index, value_data[0]);
                 break;
         }
         case 3:
         {
                 current_indicator_p -> h = value_data[0];
                 current_indicator_p -> s = value_data[1];
-                uprintf("Indicator %d color set to: %d,%d\n", indi_index, value_data[0], value_data[1]);
                 break;
         }
         case 4:
         {
                 current_indicator_p -> func = value_data[0];
-                uprintf("Indicator %d function set to: %d\n", indi_index, value_data[0]);
                 break;
         }
         case 5:
         {
                 current_indicator_p -> index = value_data[0];
-                uprintf("Indicator %d index set to: %d\n", indi_index, value_data[0]);
                 break;
         }
     }
@@ -271,7 +264,6 @@ void indicator_config_get_value( uint8_t *data )
 
     indi_index = ( (int)(*value_id) - 1) / (int)INDICATOR_PROPERTY_NUMBER;
     data_index = (int)(*value_id) - indi_index*(int)INDICATOR_PROPERTY_NUMBER;
-    uprintf("\nConfig received: %d\n", data_index);
     indicator_config* current_indicator_p = get_indicator_p(indi_index);
     switch ( data_index )
     {
