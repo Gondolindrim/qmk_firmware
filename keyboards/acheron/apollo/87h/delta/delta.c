@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "quantum.h"
 
 // PERSISTENT MEMORY (PMEM) CONFIGURATION ----------------------------------------------------------
+#ifdef VIA_ENABLE
 // Declaring a type indicator_config that stores color and enabled state
 typedef struct _indicator_config_t {
 // H, S, V store the color values; func stores the function (caps lock, scroll, num, layer indication); index stores the RGB LED index; and enabled stores the enabled state
@@ -348,3 +349,4 @@ void via_custom_value_command_kb(uint8_t *data, uint8_t length) {
 
     *command_id = id_unhandled;
 }
+#endif // VIA_ENABLE
