@@ -1,4 +1,4 @@
-/* Copyright 2020 Gondolindrim
+/* Copyright 2023 Gondolindrim <gondolindrim@acheronproject.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,20 +15,3 @@
  */
 
 #include "quantum.h"
-
-void board_init(void) {
-    setPinInput(B6);
-    setPinInput(B7);
-}
-
-bool led_update_kb(led_t led_state) {
-    bool res = led_update_user(led_state);
-    #ifdef CAPSLOCK_INDICATOR
-    if(res) {
-        writePin(LED_CAPS_LOCK_PIN, led_state.caps_lock);
-    }
-    #else
-    writePin(LED_CAPS_LOCK_PIN, 0);
-    #endif
-    return res;
-}

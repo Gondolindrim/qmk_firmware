@@ -1,5 +1,5 @@
 /*
-Copyright 2020 Gondolindrim
+Copyright 2023 Gondolindrim <gondolindrim@acheronproject.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -21,10 +21,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define LOCKING_RESYNC_ENABLE
 
 #define BACKLIGHT_PWM_DRIVER    PWMD3
-#define BACKLIGHT_PWM_CHANNEL   3
+#define BACKLIGHT_PWM_CHANNEL   2
 #define BACKLIGHT_PAL_MODE      2
 
-#define RGBLED_NUM 34
+#define RGBLED_NUM 33
 #define RGBLIGHT_EFFECT_BREATHING
 #define RGBLIGHT_EFFECT_RAINBOW_MOOD
 #define RGBLIGHT_EFFECT_RAINBOW_SWIRL
@@ -44,5 +44,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define WS2812_DMA_STREAM STM32_DMA2_STREAM5
 #define WS2812_DMA_CHANNEL 6
 
-// If this is defined, the caps lock LED will turn on and off according to the state of caps lock. If not, the LED will shine like all other LEDs despite the caps lock state.
-#define CAPSLOCK_INDICATOR
+#define WEAR_LEVELING_LOGICAL_SIZE 4096
+#define WEAR_LEVELING_BACKING_SIZE 8192

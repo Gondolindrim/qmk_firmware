@@ -5,12 +5,12 @@
         "device_version": "0.0.1"
     },
     "matrix_pins": {
-        "cols": ["C7", "C6", "B14", "B12", "B10", "B1", "C4", "A7", "A6", "A5", "A4", "A3", "A2", "C5", "A10", "A8", "C9"],
-        "rows": ["C11", "C12", "C10", "A15", "C0", "A1"]
+        "rows": ["C14","C15","A3" ,"C10","A8" ,"C12","C6" ,"C9" ,"B14","C2" ,"C1" ,"C8" ,"B9" ],
+        "cols": ["C11","A2" ,"C3" ,"A0" ,"A4" ,"B10","B1" ,"B0" ,"C5" ,"C4" ,"A7" ,"A6" ,"A5" ,"A4" ,"A15"]
     },
     "diode_direction": "COL2ROW",
     "backlight": {
-        "pin": "B0",
+        "pin": "C7",
         "levels": 20,
         "breathing": true
     },
@@ -18,7 +18,9 @@
         "pin": "B15"
     },
     "indicators": {
-        "caps_lock": "C8"
+        "caps_lock": "A10",
+        "scroll_lock": "B12",
+        "num_lock": "B8"
     },
     "processor": "STM32F401",
     "bootloader": "stm32-dfu",
@@ -26,18 +28,18 @@
         "LAYOUT_all": {
             "layout": [
                 {"label":"Esc",       "matrix":[0 ,0 ], "x":0    , "y":0             }, 
-                {"label":"F1",        "matrix":[0 ,0 ], "x":1.25 , "y":0             }, 
+                {"label":"F1",        "matrix":[0 ,1 ], "x":1.25 , "y":0             }, 
                 {"label":"F2",        "matrix":[0 ,2 ], "x":2.25 , "y":0             }, 
                 {"label":"F3",        "matrix":[0 ,3 ], "x":3.25 , "y":0             }, 
                 {"label":"F4",        "matrix":[0 ,4 ], "x":4.25 , "y":0             }, 
-                {"label":"F5",        "matrix":[0 ,5 ], "x":5    , "y":0             }, 
+                {"label":"F5",        "matrix":[0 ,5 ], "x":5.5  , "y":0             }, 
                 {"label":"F6",        "matrix":[0 ,6 ], "x":6.5  , "y":0             }, 
                 {"label":"F7",        "matrix":[0 ,7 ], "x":7.5  , "y":0             }, 
                 {"label":"F8",        "matrix":[0 ,8 ], "x":8.5  , "y":0             }, 
-                {"label":"F9",        "matrix":[0 ,9 ], "x":9.5  , "y":0             }, 
-                {"label":"F10",       "matrix":[0 ,10], "x":11   , "y":0             }, 
-                {"label":"F11",       "matrix":[0 ,11], "x":12   , "y":0             }, 
-                {"label":"F12",       "matrix":[0 ,12], "x":13   , "y":0             }, 
+                {"label":"F9",        "matrix":[0 ,9 ], "x":9.75 , "y":0             }, 
+                {"label":"F10",       "matrix":[0 ,10], "x":10.75, "y":0             }, 
+                {"label":"F11",       "matrix":[0 ,11], "x":11.75, "y":0             }, 
+                {"label":"F12",       "matrix":[0 ,12], "x":12.75, "y":0             }, 
                 {"label":"F13",       "matrix":[0 ,13], "x":14   , "y":0             }, 
                 {"label":"Print",     "matrix":[8 ,13], "x":15.25, "y":0             }, 
                 {"label":"Num Lock",  "matrix":[8 ,12], "x":16.25, "y":0             }, 
@@ -73,7 +75,7 @@
                 {"label":"P",         "matrix":[2 ,10], "x":10.5 , "y":2.5           }, 
                 {"label":"[{",        "matrix":[2 ,11], "x":11.5 , "y":2.5           }, 
                 {"label":"]}",        "matrix":[2 ,12], "x":12.5 , "y":2.5           }, 
-                {"label":"\|",        "matrix":[2 ,13], "x":13.5 , "y":2.5, "w":1.5  }, 
+                {"label":"\\|",       "matrix":[2 ,13], "x":13.5 , "y":2.5, "w":1.5  }, 
                 {"label":"Delete",    "matrix":[10,13], "x":15.25, "y":2.5           }, 
                 {"label":"End",       "matrix":[10,12], "x":16.25, "y":2.5           }, 
                 {"label":"Page Down", "matrix":[10,11], "x":17.25, "y":2.5           }, 
@@ -95,7 +97,7 @@
                 {                     "matrix":[11,12], "x":16.25, "y":3.5           }, 
                 {                     "matrix":[11,11], "x":17.25, "y":3.5           }, 
                 {"label":"Shift",     "matrix":[4 ,0 ], "x":0    , "y":4.5, "w":1.25 }, 
-                {"label":"\|",        "matrix":[4 ,14], "x":1.25 , "y":4.5           }, 
+                {"label":"\\|",       "matrix":[4 ,14], "x":1.25 , "y":4.5           }, 
                 {"label":"Z",         "matrix":[4 ,2 ], "x":2.25 , "y":4.5           }, 
                 {"label":"X",         "matrix":[4 ,3 ], "x":3.25 , "y":4.5           }, 
                 {"label":"C",         "matrix":[4 ,4 ], "x":4.25 , "y":4.5           }, 
