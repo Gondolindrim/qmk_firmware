@@ -17,11 +17,6 @@
     "ws2812": {
         "pin": "B15"
     },
-    "indicators": {
-        "caps_lock": "A10",
-        "scroll_lock": "B12",
-        "num_lock": "B8"
-    },
     "processor": "STM32F401",
     "bootloader": "stm32-dfu",
     "layouts": {
