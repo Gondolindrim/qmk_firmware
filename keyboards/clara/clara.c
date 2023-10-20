@@ -1,4 +1,4 @@
-/* Copyright 2022 Gondolindrim <gondolindrim@acheronproject.com>
+/* Copyright 2023 Gondolindrim <gondolindrim@acheronproject.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,6 +15,10 @@
  */
 
 #include "quantum.h"
+#include "print.h"
+
+/* RGB indicators: by default, they are numbered (when looking from above) INDICATOR_R, INDICATOR_C, INDICATOR_L
+*/
 
 // Declaring a type indicator_config that stores color and enabled state
 typedef struct _indicator_config_t {
@@ -109,19 +113,19 @@ indicator_config* get_indicator_p (int index) {
 // Initializing persistent memory configuration: default values are declared and stored in PMEM
 void eeconfig_init_kb(void) {
     // Default values: indicators start at white, 150 (roughly 60%) brightness value. Indicators 1 and 2 are active by default.
-    // INDICATOR 0: TOP INDICATOR
+    // INDICATOR 0: RIGHT INDICATOR
     indicators.ind1.h = 0;
     indicators.ind1.s = 255;
     indicators.ind1.v = 150;
-    indicators.ind1.func = 0x01;
+    indicators.ind1.func = 0x76;
     indicators.ind1.index = 0;
     indicators.ind1.enabled = true;
 
-    // INDICATOR 1: RIGHT INDICATOR
+    // INDICATOR 1: MIDDLE INDICATOR
     indicators.ind2.h = 86;
     indicators.ind2.s = 255;
     indicators.ind2.v = 150;
-    indicators.ind2.func = 0x02;
+    indicators.ind2.func = 0x75;
     indicators.ind2.index = 1;
     indicators.ind2.enabled = true;
 
@@ -129,7 +133,7 @@ void eeconfig_init_kb(void) {
     indicators.ind3.h = 166;
     indicators.ind3.s = 254;
     indicators.ind3.v = 150;
-    indicators.ind3.func = 0x03;
+    indicators.ind3.func = 0x01;
     indicators.ind3.index = 2;
     indicators.ind3.enabled = true;
 
@@ -167,6 +171,9 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 void keyboard_post_init_kb(void) {
     eeconfig_read_kb_datablock(&indicators);
     indicators_callback();
+
+    debug_enable = true;
+    //debug_keyboard = true;
 }
 
 // VIA CONFIGURATION -------------------------------------------------------------------------------
@@ -275,12 +282,14 @@ void indicator_config_get_value( uint8_t *data )
         {
 
             value_data[0] = current_indicator_p -> func & 0x0F;
+            uprintf("--> Current func: %x, current func with bitwise or: %X\n", current_indicator_p -> func, current_indicator_p -> func % 0x0F);
             break;
         }
         case 5:
         {
 
             value_data[0] = (current_indicator_p -> func & 0xF0) >> 4;
+            uprintf("--> Current func: %x, current func with bitwise or: %X\n", current_indicator_p -> func, current_indicator_p -> func % 0xF0);
             break;
         }
     }
