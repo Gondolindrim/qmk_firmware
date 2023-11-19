@@ -17,8 +17,7 @@
 #include "quantum.h"
 #include "print.h"
 
-/* RGB indicators: by default, they are numbered (when looking from above) INDICATOR_R, INDICATOR_C, INDICATOR_L
-*/
+// RGB indicators: by default, they are numbered (when looking from above) TOP INDICATOR, RIGHT INDICATOR, LEFT INDICATOR
 
 // Declaring a type indicator_config that stores color and enabled state
 typedef struct _indicator_config_t {
@@ -113,19 +112,19 @@ indicator_config* get_indicator_p (int index) {
 // Initializing persistent memory configuration: default values are declared and stored in PMEM
 void eeconfig_init_kb(void) {
     // Default values: indicators start at white, 150 (roughly 60%) brightness value. Indicators 1 and 2 are active by default.
-    // INDICATOR 0: RIGHT INDICATOR
+    // INDICATOR 0: TOP INDICATOR
     indicators.ind1.h = 0;
     indicators.ind1.s = 255;
     indicators.ind1.v = 150;
-    indicators.ind1.func = 0x76;
+    indicators.ind1.func = 0x01;
     indicators.ind1.index = 0;
     indicators.ind1.enabled = true;
 
-    // INDICATOR 1: MIDDLE INDICATOR
+    // INDICATOR 1: RIGHT INDICATOR
     indicators.ind2.h = 86;
     indicators.ind2.s = 255;
     indicators.ind2.v = 150;
-    indicators.ind2.func = 0x75;
+    indicators.ind2.func = 0x02;
     indicators.ind2.index = 1;
     indicators.ind2.enabled = true;
 
@@ -133,7 +132,7 @@ void eeconfig_init_kb(void) {
     indicators.ind3.h = 166;
     indicators.ind3.s = 254;
     indicators.ind3.v = 150;
-    indicators.ind3.func = 0x01;
+    indicators.ind3.func = 0x05;
     indicators.ind3.index = 2;
     indicators.ind3.enabled = true;
 
@@ -149,15 +148,29 @@ bool indicators_callback(void) {
     int index ;
     for (index = 0 ; index < INDICATOR_NUMBER ; index++) {
         current_indicator_p = get_indicator_p(index) ;
-        if (set_indicator( *(current_indicator_p)) ) sethsv( current_indicator_p -> h, current_indicator_p -> s, current_indicator_p -> v, (LED_TYPE *)&led[current_indicator_p -> index]);
+        if (set_indicator( *(current_indicator_p)) ) {
+		sethsv( current_indicator_p -> h, current_indicator_p -> s, current_indicator_p -> v, (LED_TYPE *)&led[current_indicator_p -> index]);
+	}
         else sethsv( 0,0,0, (LED_TYPE *)&led[current_indicator_p -> index]);
     }
+    rgblight_set();
     return true;
 }
 
 // This function gets called when caps, num, scroll change
 bool led_update_kb(led_t led_state) {
- 	indicators_callback();
+    bool res = led_update_user(led_state);
+    if(res) {
+        indicators_callback();
+        // writePin sets the pin high for 1 and low for 0.
+        // In this example the pins are inverted, setting
+        // it low/0 turns it on, and high/1 turns the LED off.
+        // This behavior depends on whether the LED is between the pin
+        // and VCC or the pin and GND.
+        writePin(C7, !led_state.caps_lock);
+    }
+    return res;
+
         return true;
 }
 
@@ -172,7 +185,9 @@ void keyboard_post_init_kb(void) {
     eeconfig_read_kb_datablock(&indicators);
     indicators_callback();
 
-    debug_enable = true;
+    setPinOutput(C7);
+
+    //debug_enable = true;
     //debug_keyboard = true;
 }
 

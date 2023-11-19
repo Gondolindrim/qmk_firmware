@@ -1,6 +1,6 @@
 {
     "manufacturer": "DriftMechanics",
-    "keyboard_name": "Clara",
+    "keyboard_name": "Clara rev. Alpha RC2",
     "url": "",
     "maintainer": "Gondolindrim",
     "usb": {
@@ -14,9 +14,6 @@
        "cols": ["B14", "B12", "C6" , "C12", "D2" , "B3" , "B4" , "B5" , "B9", "C15", "C14", "C13", "B8" , "C3" , "A3" , "A0" , "A1" , "A2" , "A5"],
        "rows": ["C5" , "C4" , "C2" , "A7" , "C1" , "A6" , "C11", "C0" , "A4" , "B1"]
     },
-    "ws2812": {
-        "pin": "B15"
-    },
     "features": {
         "audio": false,
         "backlight": true,
@@ -26,17 +23,24 @@
         "encoder": false,
         "extrakey": true,
         "lto": true,
-        "mousekey": true,
+        "mousekey": false,
         "nkro": true,
         "rgblight": true
     },
+    "ws2812": {
+        "pin": "B15"
+    },
     "rgblight": {
-        "led_count": 3
+        "led_count": 3,
+        "sleep": true
     },
     "backlight": {
        "breathing": false,
        "levels": 20,
        "pin": "B0"
+    },
+    "indicators": {
+        "caps_lock": "C7"
     },
     "diode_direction": "COL2ROW",
     "layouts": {
