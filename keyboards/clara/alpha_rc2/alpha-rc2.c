@@ -159,7 +159,18 @@ bool indicators_callback(void) {
 
 // This function gets called when caps, num, scroll change
 bool led_update_kb(led_t led_state) {
- 	indicators_callback();
+    bool res = led_update_user(led_state);
+    if(res) {
+        indicators_callback();
+        // writePin sets the pin high for 1 and low for 0.
+        // In this example the pins are inverted, setting
+        // it low/0 turns it on, and high/1 turns the LED off.
+        // This behavior depends on whether the LED is between the pin
+        // and VCC or the pin and GND.
+        writePin(C7, !led_state.caps_lock);
+    }
+    return res;
+
         return true;
 }
 
