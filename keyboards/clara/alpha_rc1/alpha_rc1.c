@@ -168,8 +168,6 @@ bool led_update_kb(led_t led_state) {
         writePin(C7, !led_state.caps_lock);
     }
     return res;
-
-        return true;
 }
 
 // This function is called when layers change
@@ -180,13 +178,10 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
 // At the keyboard start, retrieves PMEM stored configs and runs indicator_callback
 void keyboard_post_init_kb(void) {
+    rgblight_sethsv_noeeprom(HSV_OFF); // Set animation color off
     eeconfig_read_kb_datablock(&indicators);
     indicators_callback();
-
     setPinOutput(C7);
-
-    //debug_enable = true;
-    //debug_keyboard = true;
 }
 
 // VIA CONFIGURATION -------------------------------------------------------------------------------
