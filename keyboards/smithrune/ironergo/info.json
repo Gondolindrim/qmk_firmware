@@ -25,6 +25,9 @@
         "levels": 20,
         "breathing": true
     },
+    "indicators": {
+        "caps_lock": "B1"
+    },
     "processor": "STM32F401",
     "bootloader": "stm32-dfu",
     "layouts": {
