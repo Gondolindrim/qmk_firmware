@@ -10,10 +10,12 @@
     },
     "features": {
         "extrakey": true,
-        "lto": true,
         "mousekey": true,
         "nkro": true,
         "backlight": true
+    },
+    "build": {
+        "lto": true
     },
     "matrix_pins": {
         "cols": ["C9" , "C8" , "C7" , "C6" , "B15", "B14", "B12", "B9" , "A15" , "C3" , "C2" , "C12" , "C1" , "B4" , "B3" , "D2" ],
@@ -27,6 +29,14 @@
     },
     "indicators": {
         "caps_lock": "B1"
+    },
+    "eeprom": {
+        "driver" : "wear_leveling",
+        "wear_leveling": {
+            "driver": "embedded_flash",
+            "backing_size": 4096,
+            "logical_size": 2048
+        }
     },
     "processor": "STM32F401",
     "bootloader": "stm32-dfu",
