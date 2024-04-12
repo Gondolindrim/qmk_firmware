@@ -16,10 +16,6 @@
 
 #pragma once
 
-#include_next <mcuconf.h>
+#define HAL_USE_PWM TRUE
 
-#undef STM32_PWM_USE_ADVANCED
-#define STM32_PWM_USE_ADVANCED TRUE
-
-#undef STM32_PWM_USE_TIM1
-#define STM32_PWM_USE_TIM1 TRUE
+#include_next <halconf.h>
