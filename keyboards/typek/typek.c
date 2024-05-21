@@ -147,12 +147,17 @@ bool indicators_callback(void) {
     // Basic functioning: for each indicator, set_indicator is used to decide if the current indicator should be lit or off.
     indicator_config* current_indicator_p ;
     int index ;
-    for (index = 0 ; index < INDICATOR_NUMBER ; index++) {
+   for (index = 0 ; index < INDICATOR_NUMBER ; index++) {
         current_indicator_p = get_indicator_p(index) ;
-        if (set_indicator( *(current_indicator_p)) ) sethsv( current_indicator_p -> h, current_indicator_p -> s, current_indicator_p -> v, (LED_TYPE *)&led[current_indicator_p -> index]);
-        else sethsv( 0,0,0, (LED_TYPE *)&led[current_indicator_p -> index]);
+        if (set_indicator( *(current_indicator_p)) ){
+            // rgb_equiv is the RGB equivalent number of the current indicator's HSV; this is needed because QMK has removed the HSV API but VIA still uses HSV...
+            RGB rgb_equiv = hsv_to_rgb((HSV){current_indicator_p -> h, current_indicator_p -> s, current_indicator_p -> v});
+            rgblight_setrgb_at( rgb_equiv.r, rgb_equiv.g, rgb_equiv.b , current_indicator_p -> index);
+        }
+        else rgblight_setrgb_at( 0,0,0, current_indicator_p -> index);
     }
     return true;
+    rgblight_set();
 }
 
 // This function gets called when caps, num, scroll change
