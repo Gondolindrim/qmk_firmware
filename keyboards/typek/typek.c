@@ -20,6 +20,7 @@
 /* RGB indicators: by default, they are numbered (when looking from above) INDICATOR_R, INDICATOR_C, INDICATOR_L
 */
 
+
 // Declaring a type indicator_config that stores color and enabled state
 typedef struct _indicator_config_t {
 // H, S, V store the color values; func stores the function (caps lock, scroll, num, layer indication); index stores the RGB LED index; and enabled stores the enabled state
@@ -162,8 +163,8 @@ bool indicators_callback(void) {
 
 // This function gets called when caps, num, scroll change
 bool led_update_kb(led_t led_state) {
- 	indicators_callback();
-        return true;
+    indicators_callback();
+    return true;
 }
 
 // This function is called when layers change
@@ -179,6 +180,7 @@ void keyboard_post_init_kb(void) {
     indicators_callback();
 
     debug_enable = true;
+
     //debug_keyboard = true;
 }
 
