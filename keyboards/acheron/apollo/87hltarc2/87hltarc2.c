@@ -183,7 +183,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 // At the keyboard start, retrieves PMEM stored configs and runs indicator_callback
 void keyboard_post_init_kb(void) {
     eeconfig_read_kb_datablock(&indicators);
-    rgblight_set_effect_range(3,66);
+    rgblight_sethsv(0,0,0);
     indicators_callback();
 
     debug_enable = true;
