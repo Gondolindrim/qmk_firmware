@@ -1,0 +1,71 @@
+{
+    "keyboard_name": "Wisp",
+    "manufacturer": "S5",
+    "url": "",
+    "maintainer": "Gondolindrim",
+    "usb": {
+        "pid": "0x5750",
+        "vid": "0x5305",
+        "device_version": "0.0.1"
+    },
+    "build": {
+        "lto": true
+    },
+    "features": {
+        "bootmagic": true,
+        "extrakey": true,
+        "mousekey": true,
+        "nkro": true,
+        "rgblight": true,
+        "encoder_map": true
+    },
+    "qmk": {
+        "locking": {
+            "enabled": true,
+            "resync": true
+        }
+    },
+    "matrix_pins": {
+        "direct": [
+            ["A1" , "A3", "A2"],
+            ["A15", "A0", "B3"]
+        ]
+    },
+    "rgblight": {
+        "led_count": 4,
+        "animations": {
+            "breathing": true,
+            "rainbow_mood": true,
+            "rainbow_swirl": true,
+            "snake": true,
+            "knight": true,
+            "christmas": true,
+            "static_gradient": true,
+            "rgb_test": true,
+            "alternating": true,
+            "twinkle": true
+        }
+    },
+    "ws2812": {
+        "pin": "B15"
+    },
+    "encoder":{
+        "rotary": [
+            {"pin_a":"A5","pin_b":"A4","resolution":4}
+            ]
+    },
+    "processor": "STM32F411",
+    "bootloader": "stm32-dfu",
+    "layouts": {
+        "LAYOUT_all": {
+            "layout": [
+                {"matrix": [0, 0], "x": 0, "y": 0},
+                {"matrix": [0, 1], "x": 1, "y": 0},
+                {"matrix": [0, 2], "x": 2, "y": 0},
+                {"matrix": [1, 0], "x": 0, "y": 1},
+                {"matrix": [1, 1], "x": 1, "y": 1},
+                {"matrix": [1, 2], "x": 2, "y": 1}
+                ]
+        }
+    }
+}
