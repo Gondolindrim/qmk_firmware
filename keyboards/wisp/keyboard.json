@@ -17,7 +17,7 @@
         "mousekey": true,
         "nkro": true,
         "rgblight": true,
-        "encoder_map": true
+        "encoder": true
     },
     "qmk": {
         "locking": {
