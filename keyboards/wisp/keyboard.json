@@ -34,6 +34,7 @@
     "rgblight": {
         "led_count": 4,
         "animations": {
+            "static_light": true,
             "breathing": true,
             "rainbow_mood": true,
             "rainbow_swirl": true,
@@ -47,6 +48,7 @@
         }
     },
     "ws2812": {
+        "driver": "pwm",
         "pin": "B15"
     },
     "encoder":{
