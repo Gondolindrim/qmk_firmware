@@ -11,7 +11,15 @@
         "bootmagic": true,
         "extrakey": true,
         "mousekey": true,
-        "nkro": true
+        "nkro": true,
+	"backlight": true
+    },
+    "backlight": {
+        "as_caps_lock": true,
+        "pin": "B5",
+	"driver": "pwm",
+	"levels": 20,
+	"on_state": 0
     },
     "qmk": {
         "locking": {
@@ -24,7 +32,7 @@
         "rows": ["A6", "A1", "B4", "B8", "B9"]
     },
     "diode_direction": "COL2ROW",
-    "processor": "STM32F411",
+    "processor": "STM32F072",
     "bootloader": "stm32-dfu",
     "layouts": {
         "LAYOUT": {
@@ -84,7 +92,7 @@
                 {"label": ";", "matrix": [2, 12], "x": 13, "y": 2},
                 {"label": "'", "matrix": [2, 13], "x": 14, "y": 2},
                 {"label": "NUSH", "matrix": [3, 15], "x": 15, "y": 2},
-                {"label": "Enter", "matrix": [2, 14], "x": 15, "y": 2, "w": 1.25},
+                {"label": "Enter", "matrix": [2, 14], "x": 16, "y": 2, "w": 1.25},
                 {"label": "End", "matrix": [2, 15], "x": 17.25, "y": 2},
 
                 {"label": "F4", "matrix": [3, 0], "x": 0, "y": 3},
@@ -111,9 +119,9 @@
                 {"label": "Ctrl", "matrix": [4, 2], "x": 2.25, "y": 4, "w": 1.25},
                 {"label": "GUI", "matrix": [4, 3], "x": 3.5, "y": 4, "w": 1.25},
                 {"label": "Alt", "matrix": [4, 4], "x": 4.75, "y": 4, "w": 1.25},
-                {"label": "Space", "matrix": [4, 8], "x": 6.25, "y": 4, "w": 6.25},
-                {"label": "Alt", "matrix": [4, 12], "x": 12.5, "y": 4, "w": 1.25},
-                {"label": "GUI", "matrix": [4, 13], "x": 12.5, "y": 4, "w": 1.25},
+                {"label": "Space", "matrix": [4, 8], "x": 6, "y": 4, "w": 6.25},
+                {"label": "Alt", "matrix": [4, 12], "x": 12.25, "y": 4, "w": 1.25},
+                {"label": "GUI", "matrix": [4, 13], "x": 13.5, "y": 4, "w": 1.25},
 
                 {"label": "\u2190", "matrix": [4, 14], "x": 15.25, "y": 4},
                 {"label": "\u2193", "matrix": [4, 15], "x": 16.25, "y": 4},
