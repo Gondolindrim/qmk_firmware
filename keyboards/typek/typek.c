@@ -146,7 +146,7 @@ void eeconfig_init_kb(void) {
     indicators.ind3.enabled = true;
 
     // Write default value to EEPROM now
-    eeconfig_update_kb_datablock(&indicators);
+    eeconfig_update_kb_datablock(&indicators,0,EECONFIG_KB_DATA_SIZE);
 }
 
 // INDICATOR CALLBACK ------------------------------------------------------------------------------
@@ -187,7 +187,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
 // At the keyboard start, retrieves PMEM stored configs and runs indicator_callback
 void keyboard_post_init_kb(void) {
-    eeconfig_read_kb_datablock(&indicators);
+    eeconfig_read_kb_datablock(&indicators,0,EECONFIG_KB_DATA_SIZE);
     rgblight_set_effect_range(3,66);
     indicators_callback();
 
@@ -316,7 +316,7 @@ void indicator_config_get_value( uint8_t *data )
 
 void indicator_config_save(void)
 {
-    eeconfig_update_kb_datablock(&indicators);
+    eeconfig_update_kb_datablock(&indicators,0,EECONFIG_KB_DATA_SIZE);
 }
 
 void via_custom_value_command_kb(uint8_t *data, uint8_t length) {
