@@ -34,7 +34,8 @@
         "pin": "B1",
         "levels": 20,
         "as_caps_lock": true,
-        "breathing": false
+        "breathing": false,
+	"on_state": 0
     },
     "rgblight": {
         "led_count": 26, 
