@@ -17,7 +17,7 @@
 #include "quantum.h"
 
 const rgblight_segment_t PROGMEM my_capslock_layer[] = RGBLIGHT_LAYER_SEGMENTS(
-    {1, 2, HSV_WHITE}
+    {0, 2, HSV_WHITE}
 );
 
 // Now define the array of layers. Later layers take precedence

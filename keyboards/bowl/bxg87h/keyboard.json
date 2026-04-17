@@ -27,6 +27,9 @@
         "driver": "ws2812",
         "layers": {
             "enabled":  true
+        },
+        "default": {
+            "val": 0
         }
     },
     "ws2812": {
