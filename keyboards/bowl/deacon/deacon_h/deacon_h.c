@@ -16,17 +16,17 @@
 
 #include "quantum.h"
 
-void keyboard_post_init_kb(void) {
-    led_update_kb(host_keyboard_led_state());
-    rgblight_set_effect_range(2, 33);
-    keyboard_post_init_user();
-}
-
-bool led_update_kb(led_t led_state) {
-    bool res = led_update_user(led_state);
-    if (res) {
-        led_state.caps_lock ? rgblight_sethsv_at(HSV_WHITE, 0) : rgblight_sethsv_at(HSV_OFF, 0); 
-        led_state.caps_lock ? rgblight_sethsv_at(HSV_WHITE, 1) : rgblight_sethsv_at(HSV_OFF, 1); 
-    }   
-    return res;
+bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+    bool is_caps = host_keyboard_led_state().caps_lock;
+    
+    for (uint8_t i = led_min; i < led_max; i++) {
+        if (g_led_config.flags[i] & LED_FLAG_INDICATOR) {
+            if (is_caps) {
+                rgb_matrix_set_color(i, RGB_WHITE);
+            } else {
+                rgb_matrix_set_color(i, RGB_OFF);
+            }
+        }   
+    }
+    return false;
 }
