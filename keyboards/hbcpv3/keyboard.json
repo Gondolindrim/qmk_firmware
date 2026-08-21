@@ -29,7 +29,8 @@
     "backlight": {
         "pin": "A8",
         "levels": 20,
-        "breathing": false
+        "breathing": false,
+        "driver": "pwm"
     },
     "rgblight": {
         "led_count": 23,
@@ -64,9 +65,6 @@
     },
     "ws2812": {
         "pin": "B15"
-    },
-    "indicators": {
-        "caps_lock": "C8"
     },
     "processor": "STM32F401",
     "bootloader": "stm32-dfu",
